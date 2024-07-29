@@ -5,7 +5,7 @@ import DisplayFiles from "../../_components/display-files"
 
 const Page = async ({ params }: { params: { dir: string } }) => {
 	console.log(params)
-	const directoryName = params.dir
+	const directoryName = decodeURIComponent(params.dir)
 	const directoryPath = path.join(rootDir, directoryName)
 	const filesAndFolders = await getFilesAndFolders(directoryPath)
 
