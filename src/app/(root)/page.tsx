@@ -1,4 +1,4 @@
-import { getFilesAndFolders } from "@/utils"
+import { getFilesAndFolders } from "@/utils/get-files-and-folders"
 import { rootDir } from "@/utils/constants"
 import DisplayFiles from "./_components/display-files"
 

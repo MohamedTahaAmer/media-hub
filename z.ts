@@ -1,9 +1,9 @@
-import ffmpeg from "fluent-ffmpeg"
-import path from "path"
-import { eq } from "drizzle-orm"
 import { env } from "@/env"
-import { stat } from "fs/promises"
 import { db, schema } from "@/utils/db/db"
+import { eq } from "drizzle-orm"
+import ffmpeg from "fluent-ffmpeg"
+import { stat } from "fs/promises"
+import path from "path"
 
 // - Bun doesn't support better-sqlite3 yet, so we have to create our own instance of drizzle to be able to run this z.ts file with bun, running it with tsx will require a lot of config and stuff
 // - No running with tsx worked fine, will comment the bun db instance for now and use tsx with the original db instance
@@ -60,9 +60,9 @@ function testFluentFfmpeg2() {
 }
 // testFluentFfmpeg2()
 async function testGetFilesAndFolders() {
-	let { getFilesAndFolders } = await import("@/utils")
-	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
-	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
+	let { getFilesAndFolders } = await import("@/utils/get-files-and-folders")
+	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
+	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
 }
 void testGetFilesAndFolders()
 async function selectDB() {
