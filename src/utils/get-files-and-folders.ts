@@ -1,6 +1,6 @@
 import { like } from "drizzle-orm"
 import { constants, type Stats } from "fs"
-import { access, mkdir, readdir, stat } from "fs/promises"
+import { access, mkdir, readdir, stat, copyFile } from "fs/promises"
 import path from "path"
 import { db, schema } from "./db/db"
 
@@ -44,6 +44,11 @@ async function deepStrictEqual<T>(obj1: T, obj2: T) {
 function checkIfVideoFile(ext: string) {
 	const videoExtensions = ["mp4", "mkv", "avi", "flv", "wmv", "mov", "webm", "m4v"]
 	return videoExtensions.includes(ext)
+}
+
+function checkIFImageFile(ext: string) {
+	const imageExtensions = ["png"]
+	return imageExtensions.includes(ext)
 }
 
 async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { videoPath: string; thumbnailName: string; thumbnailPath: string }) {
@@ -99,14 +104,22 @@ export async function getFilesAndFolders(dir: string) {
 		let stats: undefined | UniqueStats
 		let size: string | undefined
 		let isVideoFile = false
+		let ext = parsedPath.ext.slice(1)
 		if (!isDirectory) {
 			stats = getFileUniqueStats(await stat(fullPath))
 			size = readableBytes(stats.size)
-			isVideoFile = checkIfVideoFile(parsedPath.ext.slice(1))
+			isVideoFile = checkIfVideoFile(ext)
+		}
+
+		let thumbnail: string | undefined
+		if (!isDirectory && !isVideoFile && checkIFImageFile(ext)) {
+			let imgPath = PUBLIC_THUMBNAILS_FOLDER + fullPath
+			await mkdir(PUBLIC_THUMBNAILS_FOLDER + dir, { recursive: true })
+			await copyFile(fullPath, imgPath)
+			thumbnail = imgPath
 		}
 
 		// - if it's a video file, then get it's thumbnail
-		let thumbnail: string | undefined
 		if (isVideoFile) {
 			let videoNameWithoutExtension = parsedPath.name
 			let thumbnailPath = `${PUBLIC_THUMBNAILS_FOLDER}${dir}`
@@ -139,7 +152,7 @@ export async function getFilesAndFolders(dir: string) {
 			path: fullPath,
 			isDirectory,
 			isVideoFile,
-			thumbnail,
+			thumbnail: thumbnail?.replace("public", ""),
 			size,
 		})
 	}
