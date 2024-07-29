@@ -38,3 +38,6 @@ next-env.d.ts
 
 # pubplic/thumbnails
 /public/thumbnails/*
+
+# sqlite.db
+sqlite.db

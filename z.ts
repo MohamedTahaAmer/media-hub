@@ -1,10 +1,18 @@
 import ffmpeg from "fluent-ffmpeg"
-import { getFilesAndFolders } from "@/utils"
 import path from "path"
-import { db, schema } from "@/utils/db/db"
 import { eq } from "drizzle-orm"
-import { stat } from "fs/promises"
 import { env } from "@/env"
+import { stat } from "fs/promises"
+import { db, schema } from "@/utils/db/db"
+
+// - Bun doesn't support better-sqlite3 yet, so we have to create our own instance of drizzle to be able to run this z.ts file with bun, running it with tsx will require a lot of config and stuff
+// - No running with tsx worked fine, will comment the bun db instance for now and use tsx with the original db instance
+// import { drizzle } from "drizzle-orm/bun-sqlite"
+// import * as schema from "@/utils/db/schema"
+// import { Database } from "bun:sqlite"
+// const sqlite = new Database(env.SQLITE_DB_NAME)
+// export const db = drizzle(sqlite)
+
 function testFluentFfmpeg() {
 	// let img = ffmpeg("/media/mohamed/640/DOWNLOADS/IDM/videos/React Compiler： In-Depth Beyond React Conf 2024.mp4'").size("640x480")
 	// console.log(img)
@@ -52,9 +60,11 @@ function testFluentFfmpeg2() {
 }
 // testFluentFfmpeg2()
 async function testGetFilesAndFolders() {
-	await getFilesAndFolders("/home/mohamed/Desktop/videos/1/2")
+	let { getFilesAndFolders } = await import("@/utils")
+	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
+	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
 }
-// void testGetFilesAndFolders()
+void testGetFilesAndFolders()
 async function selectDB() {
 	let res = await db.select().from(schema.thumbnails)
 	console.log(res)
@@ -123,3 +133,22 @@ function testT3Env() {
 	console.log(process.env.NODE_ENV)
 }
 // testT3Env()
+async function testNodeStrictDeepEqual() {
+	// throws an error if the values are not deeply equal
+	// doesn't work well with TS
+	let start = performance.now()
+	let { default: assert } = await import("assert")
+	console.log("Time taken to import assert:", performance.now() - start)
+	let a: { a: number; b: number } = { a: 1, b: 2 }
+	let b: { a: number; b: number } = { a: 1, b: 2 }
+
+	let isEqual = true
+	try {
+		// @ts-expect-error
+		assert.deepStrictEqual(a, b)
+	} catch (error) {
+		isEqual = false
+	}
+	console.log(a === b)
+}
+// void testNodeStrictDeepEqual()
