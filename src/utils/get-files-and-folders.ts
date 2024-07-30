@@ -152,7 +152,7 @@ export async function getFilesAndFolders(dir: string) {
 			path: fullPath,
 			isDirectory,
 			isVideoFile,
-			thumbnail: thumbnail?.replace("public", ""),
+			thumbnail: thumbnail ? encodeURI(thumbnail.replace("public", "")) : undefined,
 			size,
 		})
 	}
