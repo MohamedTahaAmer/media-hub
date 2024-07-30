@@ -6,10 +6,10 @@ import path from "path"
 
 const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
 	return (
-		<div className="flex flex-wrap gap-2">
+		<div className="mx-auto grid max-w-[1600px] grid-cols-12 gap-2 max-2xl:grid-cols-10 max-xl:grid-cols-8 max-lg:grid-cols-6 max-md:grid-cols-4 max-sm:grid-cols-3">
 			{filesAndFolders.map((item) => (
 				<div key={item.path} className="relative">
-					<div className="w-48 truncate rounded-xl bg-slate-200 pb-2 dark:bg-slate-700 max-lg:w-36">
+					<div className="truncate rounded-xl bg-slate-200 pb-2 dark:bg-slate-700">
 						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for video ${item.name}`} className="" width={320} height={240} />}
 						{!item.thumbnail && (
 							<>
