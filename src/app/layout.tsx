@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
 	title: "Media Hub",
 	description: "A media hub to share your favorite media",
+	icons: "/favicon.svg",
 }
 
 export default function RootLayout({

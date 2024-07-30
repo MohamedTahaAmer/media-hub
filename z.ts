@@ -62,9 +62,10 @@ function testFluentFfmpeg2() {
 async function testGetFilesAndFolders() {
 	let { getFilesAndFolders } = await import("@/utils/get-files-and-folders")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
-	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
+	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
+	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
 }
-void testGetFilesAndFolders()
+// void testGetFilesAndFolders()
 async function selectDB() {
 	let res = await db.select().from(schema.thumbnails)
 	console.log(res)
@@ -106,7 +107,7 @@ async function upsertDB() {
 }
 // void upsertDB()
 async function emptyDB() {
-	let res = await db.delete(schema.thumbnails).where(eq(schema.thumbnails.key, "videoNameWithoutExtension")).returning()
+	let res = await db.delete(schema.thumbnails)
 	console.log(res)
 }
 // void emptyDB()
