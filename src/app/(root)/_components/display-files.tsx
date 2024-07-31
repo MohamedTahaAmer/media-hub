@@ -1,5 +1,8 @@
+import MediaHub from "@/components/svgs/media-hub"
+import { cn } from "@/lib/utils"
 import type { FilesAndFolders } from "@/utils/get-files-and-folders"
-import { DownloadIcon } from "lucide-react"
+import { getIcon } from "@/utils/get-icon"
+import { DownloadIcon, type LucideProps } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import path from "path"
@@ -12,11 +15,15 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 					<div className="truncate rounded-xl bg-slate-200 pb-2 dark:bg-slate-700">
 						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for video ${item.name}`} className="" width={320} height={240} />}
 						{!item.thumbnail && (
-							<>
-								<div className="px-[12.5%] py-3">
-									<Image src="/favicon.svg" alt={`thumbnail for video ${item.name}`} className="p-4" width={320} height={240} />
-								</div>
-							</>
+							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
+								<DisplayIcon
+									name={item.name}
+									isDirectory={item.isDirectory}
+									className={cn("px-[12.5%]", {
+										"py-3": item.isDirectory,
+									})}
+								/>
+							</Link>
 						)}
 						<DisplayFileText isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
 						{!item.isDirectory && (
@@ -43,4 +50,14 @@ function DisplayFileText({ isDirectory, name, dir }: { isDirectory: boolean; nam
 			{name}
 		</Link>
 	)
+}
+
+async function DisplayIcon({ isDirectory, name, className }: { isDirectory: boolean; name: string; className: string }) {
+	let Icon: undefined | ((_: LucideProps) => JSX.Element)
+	if (isDirectory) {
+		Icon = await getIcon(name, "Folder")
+	} else {
+		Icon = await getIcon(name, "File")
+	}
+	return <Icon className={className} />
 }
