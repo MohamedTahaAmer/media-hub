@@ -63,7 +63,8 @@ async function testGetFilesAndFolders() {
 	let { getFilesAndFolders } = await import("@/utils/get-files-and-folders")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
-	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
+	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
+	await getFilesAndFolders("/home/mohamed/Desktop/videos/test/")
 }
 // void testGetFilesAndFolders()
 async function selectDB() {
@@ -153,3 +154,91 @@ async function testNodeStrictDeepEqual() {
 	console.log(a === b)
 }
 // void testNodeStrictDeepEqual()
+
+function replaceInvalidChars(input: string) {
+	// Define a regular expression that matches any character that is not a letter or number.
+	const invalidCharRegex = /[^a-zA-Z0-9]/g
+	// Replace all invalid characters with '_'.
+	console.log(input.replace(invalidCharRegex, "_"))
+}
+// replaceInvalidChars("Drizzle The TypeScript SQL.ORM.mkv")
+
+function parsedPath() {
+	// let videoName = "root/test/test2/Drizzle The TypeScript SQL.ORM.mkv"
+	let videoName = "/root/test/test2/Drizzle The"
+	const parsedPath = path.parse(videoName)
+	console.log(parsedPath)
+}
+// parsedPath()
+
+async function testFileType() {
+	// @ts-expect-error // - the fileTypeFromFile is there in the index.js file, but I don't know why TS is looking inside the core.js file only
+	let { fileTypeFromFile: s } = await import("file-type")
+	// eslint-disable-next-line
+	console.log(await s("z.ts"))
+
+	// - if we logged the keys of t, we will get the fileTypeFromFile key
+	let t = await import("file-type")
+	// loop over the keys in t
+	for (let key in t) {
+		console.log(key)
+	}
+
+	// - this is the way I was able to get TS pick the type, by explicitly importing it from the index.js file
+	let { fileTypeFromFile } = await import("node_modules/file-type/index")
+
+	return
+}
+// void testFileType()
+
+function splitVsArray() {
+	console.time("Array.from")
+	for (let i = 0; i < 100000; i++) {
+		const result = Array.from("Hello World")
+	}
+	console.timeEnd("Array.from")
+	console.time("split")
+	for (let i = 0; i < 100000; i++) {
+		const result = "Hello World".split("")
+	}
+	console.timeEnd("split")
+}
+// splitVsArray()
+
+function sanitizeForHref(input: string) {
+	const replacements: Record<string, string> = {
+		" ": "_",
+		_: "_0",
+		"#": "_23",
+		"%": "_25",
+		"&": "_26",
+		"<": "_3C",
+		">": "_3E",
+		'"': "_22",
+		"'": "_27",
+		"?": "_3F",
+		";": "_3B",
+		"@": "_40",
+		"=": "_3D",
+		"+": "_2B",
+		$: "_24",
+		",": "_2C",
+		"/": "_2F",
+		":": "_3A",
+		"：": "_3B",
+	}
+
+	console.log("\x1b[1;32m%s\x1b[1;36m", replacements[" "])
+	console.log("\x1b[1;32m%s\x1b[1;36m", replacements[" "] ?? " ")
+
+	let sanitizedStr = Array.from(input)
+		.map((char) => {
+			return replacements[char] ?? char
+		})
+		.join("")
+
+	console.log(sanitizedStr)
+}
+
+// sanitizeForHref("Next.js： Authentication (Best Practices for Server Components, Actions, Middleware)")
+// sanitizeForHref("d:_d")

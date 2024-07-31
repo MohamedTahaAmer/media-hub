@@ -1,5 +1,5 @@
-import { getFilesAndFolders } from "@/utils/get-files-and-folders"
 import { rootDir } from "@/utils/constants"
+import { getFilesAndFolders } from "@/utils/get-files-and-folders"
 import DisplayFiles from "./_components/display-files"
 
 export default async function Home() {
