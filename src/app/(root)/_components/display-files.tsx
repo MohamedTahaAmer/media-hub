@@ -1,4 +1,3 @@
-import MediaHub from "@/components/svgs/media-hub"
 import { cn } from "@/lib/utils"
 import type { FilesAndFolders } from "@/utils/get-files-and-folders"
 import { getIcon } from "@/utils/get-icon"
@@ -9,10 +8,11 @@ import path from "path"
 
 const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
 	return (
-		<div className="mx-auto grid max-w-[1600px] grid-cols-12 gap-2 max-2xl:grid-cols-10 max-xl:grid-cols-8 max-lg:grid-cols-6 max-md:grid-cols-4 max-sm:grid-cols-3">
+		<div className="grid grid-cols-8 gap-2 max-xl:grid-cols-7 max-lg:grid-cols-5 max-md:grid-cols-4 max-sm:grid-cols-3">
 			{filesAndFolders.map((item) => (
-				<div key={item.path} className="relative">
-					<div className="truncate rounded-xl bg-slate-200 pb-2 dark:bg-slate-700">
+				<div key={item.name} className="relative">
+					<div className="truncate rounded-md bg-slate-200 pb-2 dark:bg-slate-700">
+						{/* Thumbnails and Icons */}
 						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for video ${item.name}`} className="" width={320} height={240} />}
 						{!item.thumbnail && (
 							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
@@ -25,7 +25,10 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 								/>
 							</Link>
 						)}
+
 						<DisplayFileText isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
+
+						{/* size and download button for files */}
 						{!item.isDirectory && (
 							<div className="flex justify-between gap-2 px-2">
 								<Link href={`/api/download/${encodeURIComponent(path.join(directoryName, item.name))}`}>
