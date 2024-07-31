@@ -4,14 +4,15 @@ import path from "path"
 
 export async function GET(req: Request, { params }: { params: { dir: string } }) {
 	try {
-		const filePath = decodeURIComponent(params.dir)
-		const fullPath = path.join(rootDir, filePath)
+		const fullPath = path.join(rootDir, params.dir)
 		await fs.promises.access(fullPath, fs.constants.F_OK)
 		const fileStream = await fs.promises.readFile(fullPath)
+		let fileName = path.basename(fullPath)
 		return new Response(fileStream, {
 			status: 200,
 			headers: new Headers({
 				"content-type": "application/octet-stream",
+				"Content-Disposition": `attachment; filename="${fileName}"`,
 			}),
 		})
 	} catch (error) {
