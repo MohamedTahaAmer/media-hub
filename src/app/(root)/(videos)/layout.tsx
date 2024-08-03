@@ -1,3 +1,4 @@
+import { env } from "@/env"
 import NavBreadCrumb from "../_components/nav-bread-crumb"
 
 export default function BreadCrumbsLayout({
@@ -5,9 +6,10 @@ export default function BreadCrumbsLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	let root = env.ROOT_DIR.split("/").pop()
 	return (
 		<>
-			<NavBreadCrumb />
+			<NavBreadCrumb root={root} />
 			{children}
 		</>
 	)
