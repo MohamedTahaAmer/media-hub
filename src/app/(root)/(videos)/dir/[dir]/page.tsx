@@ -1,7 +1,7 @@
 import { getFilesAndFolders } from "@/utils/get-files-and-folders"
 import path from "path"
-import DisplayFiles from "../../../_components/display-files"
 import { env } from "@/env"
+import DisplayFiles from "../../_components/display-files"
 
 const Page = async ({ params }: { params: { dir: string } }) => {
 	const directoryName = decodeURIComponent(params.dir)

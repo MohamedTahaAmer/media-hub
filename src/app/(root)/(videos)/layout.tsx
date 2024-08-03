@@ -1,5 +1,5 @@
 import { env } from "@/env"
-import NavBreadCrumb from "../_components/nav-bread-crumb"
+import NavBreadCrumb from "./_components/nav-bread-crumb"
 
 export default function BreadCrumbsLayout({
 	children,
@@ -10,7 +10,9 @@ export default function BreadCrumbsLayout({
 	return (
 		<>
 			<NavBreadCrumb root={root} />
-			{children}
+			<div id="videos-layout" className="pt-8">
+				{children}
+			</div>
 		</>
 	)
 }

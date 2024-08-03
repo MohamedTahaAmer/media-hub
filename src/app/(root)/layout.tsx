@@ -8,7 +8,9 @@ export default function NavBarLayout({
 	return (
 		<>
 			<Navbar />
-			<div className="mx-auto mt-24 max-w-7xl px-8 max-sm:px-4">{children}</div>
+			<div id="navbar-layout" className="mx-auto max-w-7xl px-8 pt-16 max-sm:px-4">
+				{children}
+			</div>
 		</>
 	)
 }
