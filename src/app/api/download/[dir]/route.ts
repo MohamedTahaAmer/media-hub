@@ -7,7 +7,7 @@ export async function GET(req: Request, { params }: { params: { dir: string } })
 		const fullPath = path.join(rootDir, params.dir)
 		await fs.promises.access(fullPath, fs.constants.F_OK)
 		const fileStream = await fs.promises.readFile(fullPath)
-		let fileName = path.basename(fullPath)
+		let fileName = encodeURIComponent(path.basename(fullPath))
 		return new Response(fileStream, {
 			status: 200,
 			headers: new Headers({
