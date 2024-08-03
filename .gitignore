@@ -50,3 +50,6 @@ src/app/(test)/*
 
 # drizzle migrations
 drizzle/*
+
+# dump files
+y-dump.ts

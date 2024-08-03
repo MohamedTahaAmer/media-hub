@@ -2,6 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import ThemeToggleInLine from "./ThemeToggleInLine"
 import { ThemeProvider } from "@/providers/theme-provider"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 
 const Navbar = () => {
 	return (
@@ -17,6 +19,10 @@ const Navbar = () => {
 					</Link>
 
 					<div className="flex items-center justify-center gap-x-4">
+						<Link href="/upload" className={cn(buttonVariants({ variant: "ghost" }))}>
+							Upload
+						</Link>
+
 						<ThemeToggleInLine />
 					</div>
 				</div>
