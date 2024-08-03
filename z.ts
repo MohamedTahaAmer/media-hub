@@ -242,3 +242,16 @@ function sanitizeForHref(input: string) {
 
 // sanitizeForHref("Next.js： Authentication (Best Practices for Server Components, Actions, Middleware)")
 // sanitizeForHref("d:_d")
+
+async function testReactRenderToString() {
+	// let React = require("react")
+	// let ReactDOMServer = require("react-dom/server")
+	// let html = ReactDOMServer.renderToString(Y)
+	let React = await import("react")
+	let ReactDOMServer = await import("react-dom/server")
+	// - create y.tsx file and then import it here
+	// let { default: Y } = await import("./y")
+	// let html = ReactDOMServer.renderToString(React.createElement(Y))
+	// console.log(html)
+}
+// void testReactRenderToString()

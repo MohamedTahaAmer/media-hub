@@ -1,7 +1,8 @@
 "use client"
+import SvgsForTheClient from "@/components/svgs/svgs-for-the-client"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { UploadCloud } from "lucide-react"
+import { BadgeMinus, UploadCloud } from "lucide-react"
 import Image from "next/image"
 import React, { useRef, useState } from "react"
 
@@ -22,6 +23,10 @@ const UploadFile: React.FC = () => {
 	const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const newFiles = Array.from(event.target.files ?? [])
 		setFiles((prevFiles) => [...prevFiles, ...newFiles])
+	}
+
+	let handleRemoveFile = (index: number) => {
+		setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
 	}
 
 	// handle drag events
@@ -90,12 +95,12 @@ const UploadFile: React.FC = () => {
 			className="flex max-w-7xl flex-col items-center justify-center gap-4 p-8"
 		>
 			<h1 className="text-center text-2xl font-bold">{!areFilesSelected ? "Upload Files" : "Files to be uploaded"}</h1>
-			<form id="upload-files-form" onSubmit={(e) => void handleSubmit(e)} encType="multipart/form-data" className="flex w-full grow flex-col gap-4">
+			<form onSubmit={(e) => void handleSubmit(e)} encType="multipart/form-data" className="flex w-full grow flex-col gap-4">
 				{!areFilesSelected && (
 					<label
 						htmlFor="dropzone-file"
 						className={cn(
-							"group relative flex h-full w-full grow cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-center text-gray-500 transition dark:border-gray-600",
+							"flex grow cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-center text-gray-500 transition dark:border-gray-600",
 							{ "text-blue-500 dark:border-slate-400 dark:bg-slate-800": dragActive },
 						)}
 						onDrop={handleDrop}
@@ -112,40 +117,38 @@ const UploadFile: React.FC = () => {
 					</label>
 				)}
 				<input ref={inputRef} type="file" name="file" multiple onChange={handleFilesChange} className="hidden" id="dropzone-file"></input>
-			</form>
-			{areFilesSelected && (
-				<>
-					<div className="group relative flex size-full grow cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 transition dark:border-gray-600">
-						<ul className="space-y-2">
-							{files.map((file, index) => (
-								<li key={index} className="flex justify-between">
+				{areFilesSelected && (
+					<ul className="flex grow flex-col space-y-2 rounded-lg border-2 border-dashed border-slate-300 p-4 transition dark:border-gray-600 sm:px-8 md:px-16 lg:px-24">
+						{files.map((file, index) => (
+							<li key={index} className="flex justify-between gap-2">
+								<div className="grow truncate">
 									<span>{file.name}</span>
-									<span>{uploadProgress[index] ? `${uploadProgress[index].toFixed(2)}%` : "0%"}</span>
-									<Image
-										src={URL.createObjectURL(file)}
-										alt="close"
-										width={16}
-										height={16}
-										className="cursor-pointer"
-										onClick={() => setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index || i))}
-									/>
-								</li>
-							))}
-						</ul>
-					</div>
-				</>
-			)}
-			<div className="flex w-full justify-between">
-				{areFilesSelected && <Button onClick={() => inputRef.current?.click()}>Select Files</Button>}
-				<Button
-					type="submit"
-					disabled={!areFilesSelected}
-					className="ml-auto rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-blue-600"
-					form="upload-files-form"
-				>
-					Upload
-				</Button>
-			</div>
+								</div>
+								<span className="w-[67px] shrink-0 text-center">{uploadProgress[index] ? `${uploadProgress[index].toFixed(2)}%` : "0%"}</span>
+								{file.type.startsWith("image") ? (
+									<Image src={URL.createObjectURL(file)} alt={file.name} width={40} height={40} />
+								) : (
+									<SvgsForTheClient svgName={file.name} className="size-10" type="File" />
+								)}
+								{/* <DisplayImagePreview file={file} /> */}
+								<Button variant="destructive" className="w-[48px] shrink-0" size="icon" onClick={() => handleRemoveFile(index)}>
+									<BadgeMinus />
+								</Button>
+							</li>
+						))}
+					</ul>
+				)}
+				<div className="flex w-full justify-between">
+					{areFilesSelected && <Button onClick={() => inputRef.current?.click()}>Select Files</Button>}
+					<Button
+						type="submit"
+						disabled={!areFilesSelected}
+						className="ml-auto rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-blue-600"
+					>
+						Upload
+					</Button>
+				</div>
+			</form>
 		</div>
 	)
 }
