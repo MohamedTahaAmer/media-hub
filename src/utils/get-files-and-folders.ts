@@ -3,6 +3,7 @@ import { constants, type Stats } from "fs"
 import { access, mkdir, readdir, stat, copyFile } from "fs/promises"
 import path from "path"
 import { db, schema } from "./db/db"
+import { deepStrictEqual } from "."
 
 // if this is a video file, get its thumbnail
 function getFileUniqueStats(stats: Stats) {
@@ -27,18 +28,6 @@ function readableBytes(bytes: number) {
 	if (bytes === 0) return "0 B"
 	const i = Math.floor(Math.log(bytes) / Math.log(1024))
 	return (bytes / Math.pow(1024, i)).toFixed(2) + " " + ["B", "KB", "MB", "GB", "TB"][i]
-}
-
-async function deepStrictEqual<T>(obj1: T, obj2: T) {
-	let equal = true
-	try {
-		let { default: assert } = await import("assert")
-		// @ts-expect-error
-		assert.deepStrictEqual(obj1, obj2)
-	} catch (error) {
-		equal = false
-	}
-	return equal
 }
 
 function sanitizeForHref(input: string): string {

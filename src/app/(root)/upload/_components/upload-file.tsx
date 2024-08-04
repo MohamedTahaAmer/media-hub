@@ -13,7 +13,7 @@ const UploadFile: React.FC = () => {
 	const [uploadProgress, setUploadProgress] = useState<number[]>([])
 	const areFilesSelected = !!files.length
 
-	const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
+	const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
 		event.preventDefault()
 		setDragActive(false)
 		const newFiles = Array.from(event.dataTransfer.files)
@@ -21,8 +21,12 @@ const UploadFile: React.FC = () => {
 	}
 
 	const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const newFiles = Array.from(event.target.files ?? [])
-		setFiles((prevFiles) => [...prevFiles, ...newFiles])
+		const selectedFiles = Array.from(event.target.files ?? [])
+		setFiles((prevFiles) => {
+			// if there is already a file with the same name and size, don't add it
+			const newFiles = selectedFiles.filter((file) => !files.some((f) => f.name === file.name && f.size === file.size))
+			return [...prevFiles, ...newFiles]
+		})
 	}
 
 	let handleRemoveFile = (index: number) => {
@@ -30,7 +34,7 @@ const UploadFile: React.FC = () => {
 	}
 
 	// handle drag events
-	const handleDrag = (e: React.DragEvent<HTMLLabelElement>) => {
+	const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
 		e.stopPropagation()
 		if (e.type === "dragenter" || e.type === "dragover") {
@@ -96,50 +100,40 @@ const UploadFile: React.FC = () => {
 		>
 			<h1 className="text-center text-2xl font-bold">{!areFilesSelected ? "Upload Files" : "Files to be uploaded"}</h1>
 			<form onSubmit={(e) => void handleSubmit(e)} encType="multipart/form-data" className="flex w-full grow flex-col gap-4">
-				{!areFilesSelected && (
-					<label
-						htmlFor="dropzone-file"
-						className={cn(
-							"flex grow cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-center text-gray-500 transition dark:border-gray-600",
-							{ "text-blue-500 dark:border-slate-400 dark:bg-slate-800": dragActive },
-						)}
-						onDrop={handleDrop}
-						onDragEnter={handleDrag}
-						onDragLeave={handleDrag}
-						onDragOver={handleDrag}
-						// onDragOver={(e) => e.preventDefault()}
-					>
-						<UploadCloud size={48} className="" />
-						<span className=" ">
-							Drag and drop files here
-							<br className="md:hidden" /> or click to select files
-						</span>
-					</label>
-				)}
-				<input ref={inputRef} type="file" name="file" multiple onChange={handleFilesChange} className="hidden" id="dropzone-file"></input>
-				{areFilesSelected && (
-					<ul className="flex grow flex-col space-y-2 rounded-lg border-2 border-dashed border-slate-300 p-4 transition dark:border-gray-600 sm:px-8 md:px-16 lg:px-24">
-						{files.map((file, index) => (
-							<li key={index} className="flex justify-between gap-2">
-								<div className="grow truncate">
-									<span>{file.name}</span>
-								</div>
-								<span className="w-[67px] shrink-0 text-center">{uploadProgress[index] ? `${uploadProgress[index].toFixed(2)}%` : "0%"}</span>
-								{file.type.startsWith("image") ? (
-									<Image src={URL.createObjectURL(file)} alt={file.name} width={40} height={40} />
-								) : (
-									<SvgsForTheClient svgName={file.name} className="size-10" type="File" />
-								)}
-								{/* <DisplayImagePreview file={file} /> */}
-								<Button variant="destructive" className="w-[48px] shrink-0" size="icon" onClick={() => handleRemoveFile(index)}>
-									<BadgeMinus />
-								</Button>
-							</li>
-						))}
-					</ul>
-				)}
+				<div
+					className={cn(
+						"grow rounded-lg border-2 border-dashed border-slate-300 text-gray-500 transition dark:border-gray-600",
+						{ "text-blue-500 dark:border-slate-400 dark:bg-slate-800": dragActive },
+						{ "flex cursor-pointer flex-col items-center justify-center": !areFilesSelected },
+					)}
+					onClick={() => inputRef.current?.click()}
+					onDrop={handleDrop}
+					onDragEnter={handleDrag}
+					onDragLeave={handleDrag}
+					onDragOver={handleDrag}
+				>
+					{!areFilesSelected ? (
+						<>
+							<UploadCloud size={48} className="" />
+							<span className=" ">
+								Drag and drop files here
+								<br className="md:hidden" /> or click to select files
+							</span>
+						</>
+					) : (
+						<DisplayFileInfo files={files} uploadProgress={uploadProgress} handleRemoveFile={handleRemoveFile} />
+					)}
+				</div>
+				<label htmlFor="fileInput" className="sr-only">
+					Choose files
+				</label>
+				<input ref={inputRef} type="file" name="file" multiple onChange={handleFilesChange} className="hidden" id="fileInput" />
 				<div className="flex w-full justify-between">
-					{areFilesSelected && <Button onClick={() => inputRef.current?.click()}>Select Files</Button>}
+					{areFilesSelected && (
+						<Button type="button" onClick={() => inputRef.current?.click()}>
+							Add More Files
+						</Button>
+					)}
 					<Button
 						type="submit"
 						disabled={!areFilesSelected}
@@ -154,3 +148,36 @@ const UploadFile: React.FC = () => {
 }
 
 export default UploadFile
+
+function DisplayFileInfo({ files, uploadProgress, handleRemoveFile }: { files: File[]; uploadProgress: number[]; handleRemoveFile: (index: number) => void }) {
+	return (
+		<ul onClick={(e) => e.stopPropagation()} className="flex flex-col gap-2 p-4 text-foreground sm:px-8 md:px-16 lg:px-24">
+			{files.map((file, index) => (
+				<li key={index} className="flex items-center justify-between gap-2">
+					<div className="grow truncate">
+						<span>{file.name}</span>
+					</div>
+					<span className="w-[67px] shrink-0 text-center" arial-label={`Upload progress for ${file.name}`}>
+						{uploadProgress[index] ? `${uploadProgress[index].toFixed(2)}%` : "0%"}
+					</span>
+					{file.type.startsWith("image") ? (
+						<Image src={URL.createObjectURL(file)} alt={file.name} className="shrink-0" width={40} height={40} />
+					) : (
+						<SvgsForTheClient svgName={file.name} className="size-10 shrink-0" type="File" />
+					)}
+					<Button
+						type="button"
+						variant="destructive"
+						className="w-[48px] shrink-0"
+						size="icon"
+						onClick={() => handleRemoveFile(index)}
+						aria-label={`Remove ${file.name}`}
+						title={`Remove ${file.name}`}
+					>
+						<BadgeMinus />
+					</Button>
+				</li>
+			))}
+		</ul>
+	)
+}

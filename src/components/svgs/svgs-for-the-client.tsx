@@ -40,10 +40,9 @@ export let getIcon = async (name: string, type: "File" | "Folder" | "OpenFolder"
 }
 
 type IconTypes = "File" | "Folder" | "OpenFolder"
-type SvgsForTheClientProps = LucideProps & { svgName: string; type: IconTypes }
-const SvgsForTheClient = ({ svgName, type, ...props }: SvgsForTheClientProps) => {
+type SvgsForTheClientProps = { svgName: string; type: IconTypes; className?: string }
+const SvgsForTheClient = ({ svgName, type, className }: SvgsForTheClientProps) => {
 	const [importedComponent, setImportedComponent] = useState<JSX.Element | null>(null)
-	let className = props.className
 	useEffect(() => {
 		const importComponent = async () => {
 			const AnotherComponent = await getIcon(svgName, type)
