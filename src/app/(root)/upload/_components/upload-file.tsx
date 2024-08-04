@@ -9,6 +9,7 @@ import React, { useRef, useState } from "react"
 const UploadFile: React.FC = () => {
 	const inputRef = useRef<HTMLInputElement>(null)
 	const [files, setFiles] = useState<File[]>([])
+	const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 	const [dragActive, setDragActive] = useState<boolean>(false)
 	const [uploadProgress, setUploadProgress] = useState<number[]>([])
 	const areFilesSelected = !!files.length
@@ -48,6 +49,8 @@ const UploadFile: React.FC = () => {
 		event.preventDefault()
 
 		const promises = files.map((file, index) => {
+			if (uploadedFiles.some((f) => f.name === file.name && f.size === file.size)) return Promise.resolve()
+
 			return new Promise<void>((resolve, reject) => {
 				const formData = new FormData()
 				formData.append("file", file)
@@ -68,6 +71,7 @@ const UploadFile: React.FC = () => {
 
 				xhr.onload = () => {
 					if (xhr.status === 200) {
+						setUploadedFiles((prevFiles) => [...prevFiles, file])
 						resolve()
 					} else {
 						reject(new Error("Failed to upload file(s)"))
