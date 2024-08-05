@@ -60,7 +60,7 @@ function testFluentFfmpeg2() {
 }
 // testFluentFfmpeg2()
 async function testGetFilesAndFolders() {
-	let { getFilesAndFolders } = await import("@/utils/get-files-and-folders")
+	let { getFilesAndFolders } = await import("@/utils/create-thumbnails/get-files-and-folders")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
@@ -255,3 +255,17 @@ async function testReactRenderToString() {
 	// console.log(html)
 }
 // void testReactRenderToString()
+
+async function testAsyncAwait() {
+	console.log("first")
+	await new Promise((resolve) => {
+		setTimeout(() => {
+			console.log("second")
+			resolve(1)
+		}, 1000)
+	})
+
+	console.log("last")
+}
+
+// void testAsyncAwait()

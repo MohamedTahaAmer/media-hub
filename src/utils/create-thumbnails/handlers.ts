@@ -1,11 +1,12 @@
-import { like } from "drizzle-orm"
 import { constants, type Stats } from "fs"
-import { access, mkdir, readdir, stat, copyFile } from "fs/promises"
+import { access, copyFile, mkdir, stat } from "fs/promises"
 import path from "path"
-import { db, schema } from "./db/db"
-import { deepStrictEqual } from "."
+import { db, schema } from "../db/db"
+import { deepStrictEqual, readableBytes, sanitizeDir, sanitizeForHref } from "./helpers"
+import type { FilesAndFolders, Thumbnail } from "./types"
 
-// if this is a video file, get its thumbnail
+const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
+
 function getFileUniqueStats(stats: Stats) {
 	return {
 		size: stats.size,
@@ -22,51 +23,6 @@ async function doesFileExist(filePath: string) {
 		exist = false
 	}
 	return exist
-}
-
-function readableBytes(bytes: number) {
-	if (bytes === 0) return "0 B"
-	const i = Math.floor(Math.log(bytes) / Math.log(1024))
-	return (bytes / Math.pow(1024, i)).toFixed(2) + " " + ["B", "KB", "MB", "GB", "TB"][i]
-}
-
-function sanitizeForHref(input: string): string {
-	const replacements: Record<string, string> = {
-		" ": "_",
-		_: "_0",
-		"#": "_23",
-		"%": "_25",
-		"&": "_26",
-		"<": "_3C",
-		">": "_3E",
-		'"': "_22",
-		"'": "_27",
-		"?": "_3F",
-		";": "_3B",
-		"@": "_40",
-		"=": "_3D",
-		"+": "_2B",
-		$: "_24",
-		",": "_2C",
-		"/": "_2F",
-		":": "_3A",
-		"：": "_3B",
-	}
-
-	return input
-		.split("")
-		.map((char) => replacements[char] ?? char)
-		.join("")
-}
-function sanitizeDir(dir: string) {
-	let slugs = dir.split("/")
-	return slugs.map(sanitizeForHref).join("/")
-}
-
-async function checkIfFileIsActual(file: string, type: "video" | "image") {
-	let { fileTypeFromFile } = await import("node_modules/file-type/index")
-	let typeObj = await fileTypeFromFile(file)
-	return typeObj?.mime.startsWith(type)
 }
 
 async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { videoPath: string; thumbnailName: string; thumbnailPath: string }) {
@@ -87,7 +43,7 @@ async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { vi
 	})
 }
 
-function handleDirectories({ filesAndFolders, path, name }: { filesAndFolders: FilesAndFolders; path: string; name: string }) {
+export function handleDirectories({ filesAndFolders, path, name }: { filesAndFolders: FilesAndFolders; path: string; name: string }) {
 	filesAndFolders.push({
 		name,
 		isDirectory: true,
@@ -96,7 +52,7 @@ function handleDirectories({ filesAndFolders, path, name }: { filesAndFolders: F
 	})
 }
 
-async function handleActualVideos({
+export async function handleVideos({
 	filesAndFolders,
 	dbThumbnails,
 	videoFile,
@@ -153,7 +109,7 @@ async function handleActualVideos({
 		size: readableBytes(stats.size),
 	})
 }
-async function handleActualImage({
+export async function handleImage({
 	filesAndFolders,
 	dbThumbnails,
 	imageFile,
@@ -200,72 +156,3 @@ async function handleActualImage({
 		size: readableBytes(stats.size),
 	})
 }
-export type FilesAndFolders = {
-	name: string
-	isDirectory: boolean
-	thumbnail: string | undefined
-	size: string | undefined
-}[]
-type UniqueStats = {
-	size: number
-	ctime: string
-	mtime: string
-}
-type Thumbnail = {
-	id: number
-	key: string
-	stats: UniqueStats
-}
-const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
-
-// - function to get the folders and files inside a dir, also get the file stats, and if video, then create a thumbnail for it
-export async function getFilesAndFolders(dir: string) {
-	// if dir ends with a slash, remove it
-	if (dir.endsWith("/")) dir = dir.slice(0, -1)
-	// get all the thumbnails in the db that have the same dir as the current dir, not to make a separate db query for each file in this dir
-	let dbThumbnails = (await db
-		.select()
-		.from(schema.thumbnails)
-		.where(like(schema.thumbnails.key, `${dir}%`))) as Thumbnail[]
-	const filesAndFolders: FilesAndFolders = []
-	const entries = await readdir(dir, { withFileTypes: true })
-
-	let videoHandlerCalls = []
-	for (const entry of entries) {
-		const fullPath = path.join(dir, entry.name)
-		if (entry.isDirectory()) {
-			handleDirectories({ filesAndFolders, path: fullPath, name: entry.name })
-			continue
-		}
-		if (await checkIfFileIsActual(fullPath, "video")) {
-			// await handleActualVideos({ filesAndFolders, dbThumbnails, videoFile: fullPath })
-			videoHandlerCalls.push(handleActualVideos({ filesAndFolders, dbThumbnails, videoFile: fullPath }))
-			continue
-		}
-		if (await checkIfFileIsActual(fullPath, "image")) {
-			await handleActualImage({ filesAndFolders, dbThumbnails, imageFile: fullPath })
-			continue
-		}
-		const stats = await stat(fullPath)
-		const size = readableBytes(stats.size)
-		filesAndFolders.push({
-			name: entry.name,
-			isDirectory: false,
-			thumbnail: undefined,
-			size,
-		})
-	}
-	await Promise.allSettled(videoHandlerCalls)
-	return filesAndFolders.sort((a, b) => {
-		if (a.isDirectory && !b.isDirectory) return -1
-		if (!a.isDirectory && b.isDirectory) return 1
-		return a.name.localeCompare(b.name)
-	})
-}
-/*
-1- if there is a slash at the end of the dir, remove it
-2- the thumbnail key shouldn't contain any special chars like / space # . , etc, all should be replaced with -
-3- only call createThumbnail if the file is a real video file, based on it's binary data, not the extension
-4- the actual video name is the one stored in the db, and the corrected thumbnail name is the one used to create the thumbnail, and is the one sent to the client
-5- we are returning thumbnails for videos and images only
-*/

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { FilesAndFolders } from "@/utils/get-files-and-folders"
+import type { FilesAndFolders } from "@/utils/create-thumbnails/types"
 import { getIcon } from "@/utils/get-icon"
 import { DownloadIcon, type LucideProps } from "lucide-react"
 import Image from "next/image"
