@@ -4,9 +4,5 @@ import DisplayFiles from "./_components/display-files"
 
 export default async function Home() {
 	const filesAndFolders = await getFilesAndFolders(getRootDir())
-	return (
-		<div>
-			<DisplayFiles filesAndFolders={filesAndFolders} />
-		</div>
-	)
+	return <DisplayFiles filesAndFolders={filesAndFolders} />
 }
