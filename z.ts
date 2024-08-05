@@ -165,7 +165,7 @@ function replaceInvalidChars(input: string) {
 
 function parsedPath() {
 	// let videoName = "root/test/test2/Drizzle The TypeScript SQL.ORM.mkv"
-	let videoName = "/root/test/test2/Drizzle The"
+	let videoName = "/root/test/test2/Drizzle The.txt"
 	const parsedPath = path.parse(videoName)
 	console.log(parsedPath)
 }
@@ -267,5 +267,30 @@ async function testAsyncAwait() {
 
 	console.log("last")
 }
-
 // void testAsyncAwait()
+
+async function testSyncMemoryCache() {
+	let { setRootDir, getRootDir } = await import("@/utils/root-dir")
+	await setRootDir("root/es")
+	console.log(getRootDir())
+}
+// void testSyncMemoryCache()
+
+async function testFSStateSync() {
+	let { statSync } = await import("fs")
+	let stats = statSync("/home/mohamed/Desktop/videos/Drizzle The TypeScript SQL.ORM.mkv")
+	console.log(stats.isFile(), "file")
+	console.log(stats.isDirectory(), "file")
+	let statsDir = statSync("/home/mohamed/Desktop/videos")
+	console.log(statsDir.isDirectory(), "dir")
+
+	// try {
+	// 	let statsDir2 = statSync("/home/mohamed/Desktop/videos/test/sd")
+	// 	console.log(statsDir2.isDirectory(), "dir")
+	// }
+	// catch (error) {
+	// 	console.log(error.message)
+	// 	console.log(error.code)
+	// }
+}
+// void testFSStateSync()

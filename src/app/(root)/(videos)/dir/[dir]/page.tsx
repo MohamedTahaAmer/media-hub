@@ -1,11 +1,11 @@
-import { getFilesAndFolders } from "@/utils/get-files-and-folders"
+import { getFilesAndFolders } from "@/utils/create-thumbnails/get-files-and-folders"
+import { getRootDir } from "@/utils/root-dir"
 import path from "path"
-import { env } from "@/env"
 import DisplayFiles from "../../_components/display-files"
 
 const Page = async ({ params }: { params: { dir: string } }) => {
 	const directoryName = decodeURIComponent(params.dir)
-	const directoryPath = path.join(env.ROOT_DIR, directoryName)
+	const directoryPath = path.join(getRootDir(), directoryName)
 	const filesAndFolders = await getFilesAndFolders(directoryPath)
 
 	return (

@@ -1,10 +1,10 @@
-import { env } from "@/env"
+import { getRootDir } from "@/utils/root-dir"
 import fs from "fs"
 import path from "path"
 
 export async function GET(req: Request, { params }: { params: { dir: string } }) {
 	try {
-		const fullPath = path.join(env.ROOT_DIR, params.dir)
+		const fullPath = path.join(getRootDir(), params.dir)
 		await fs.promises.access(fullPath, fs.constants.F_OK)
 		const fileStream = await fs.promises.readFile(fullPath)
 		let fileName = encodeURIComponent(path.basename(fullPath))

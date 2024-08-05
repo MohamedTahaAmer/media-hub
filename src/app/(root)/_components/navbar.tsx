@@ -3,6 +3,8 @@ import Image from "next/image"
 import Link from "next/link"
 import ThemeToggleInLine from "./ThemeToggleInLine"
 import UploadLink from "./upload-link"
+import ChangeRootDirLink from "./change-dir-link"
+import { checkIfClientIsSameAsServer } from "@/utils/next.-js-helper"
 
 const Navbar = () => {
 	return (
@@ -17,8 +19,9 @@ const Navbar = () => {
 						<p className="hidden text-2xl font-bold dark:text-background sm:block">Media Hub</p>
 					</Link>
 
-					<div className="flex items-center justify-center gap-x-4">
+					<div className="flex items-center justify-center gap-x-2">
 						<UploadLink />
+						{checkIfClientIsSameAsServer() && <ChangeRootDirLink />}
 						<ThemeToggleInLine />
 					</div>
 				</div>

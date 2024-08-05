@@ -24,3 +24,8 @@ export function getHeaders() {
 	const headersList = headers()
 	return Object.fromEntries(headersList) as unknown as RequestHeaders
 }
+
+export function checkIfClientIsSameAsServer() {
+	let headers = getHeaders()
+	return headers["x-forwarded-for"] === "::1"
+}

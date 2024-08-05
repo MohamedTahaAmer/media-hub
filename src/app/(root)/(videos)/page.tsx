@@ -1,10 +1,9 @@
-import { env } from "@/env"
-import { getFilesAndFolders } from "@/utils/get-files-and-folders"
+import { getFilesAndFolders } from "@/utils/create-thumbnails/get-files-and-folders"
+import { getRootDir } from "@/utils/root-dir"
 import DisplayFiles from "./_components/display-files"
 
 export default async function Home() {
-	const directoryPath = env.ROOT_DIR
-	const filesAndFolders = await getFilesAndFolders(directoryPath)
+	const filesAndFolders = await getFilesAndFolders(getRootDir())
 	return (
 		<div>
 			<DisplayFiles filesAndFolders={filesAndFolders} />

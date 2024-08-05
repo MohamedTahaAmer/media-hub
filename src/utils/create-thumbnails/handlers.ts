@@ -1,6 +1,7 @@
-import { constants, type Stats } from "fs"
-import { access, copyFile, mkdir, stat } from "fs/promises"
+import { type Stats } from "fs"
+import { copyFile, mkdir, stat } from "fs/promises"
 import path from "path"
+import { doesFileExist } from ".."
 import { db, schema } from "../db/db"
 import { deepStrictEqual, readableBytes, sanitizeDir, sanitizeForHref } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
@@ -13,16 +14,6 @@ function getFileUniqueStats(stats: Stats) {
 		ctime: stats.ctime.toISOString(),
 		mtime: stats.mtime.toISOString(),
 	}
-}
-
-async function doesFileExist(filePath: string) {
-	let exist = true
-	try {
-		await access(filePath, constants.F_OK)
-	} catch (error) {
-		exist = false
-	}
-	return exist
 }
 
 async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { videoPath: string; thumbnailName: string; thumbnailPath: string }) {
