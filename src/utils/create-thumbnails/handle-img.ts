@@ -32,7 +32,11 @@ export async function handleImage({
 			filesAndFolders.push({
 				name: `${parsedImage.name}.${parsedImage.ext}`,
 				isDirectory: false,
-				thumbnail: thumbnail.replace("public", ""),
+				thumbnail: {
+					name: thumbnail.replace("public", ""),
+					width: dbThumbnail.thumbnailWidth,
+					height: dbThumbnail.thumbnailHeight,
+				},
 				size: readableBytes(stats.size),
 			})
 			return
@@ -55,20 +59,28 @@ export async function handleImage({
 		.toFile(thumbnail, (err, info) => {
 			console.log(err, info)
 		})
-	let insertedThumbnail = await db
-		.insert(schema.thumbnails)
-		.values({ key: imageFile, stats })
-		.onConflictDoUpdate({
-			target: schema.thumbnails.key,
-			set: { stats },
-		})
-		.returning()
+	let insertedThumbnail = (
+		await db
+			.insert(schema.thumbnails)
+			.values({ key: imageFile, stats, thumbnailWidth, thumbnailHeight })
+			.onConflictDoUpdate({
+				target: schema.thumbnails.key,
+				set: { stats },
+			})
+			.returning()
+	)[0]
+	if (!insertedThumbnail) throw new Error("Couldn't insert the thumbnail")
+
 	console.log(insertedThumbnail)
 	console.log(thumbnail.replace("public", ""))
 	filesAndFolders.push({
 		name: `${parsedImage.name}.${parsedImage.ext}`,
 		isDirectory: false,
-		thumbnail: thumbnail.replace("public", ""),
+		thumbnail: {
+			name: thumbnail.replace("public", ""),
+			width: insertedThumbnail.thumbnailWidth,
+			height: insertedThumbnail.thumbnailHeight,
+		},
 		size: readableBytes(stats.size),
 	})
 }

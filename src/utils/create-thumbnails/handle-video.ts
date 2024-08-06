@@ -29,7 +29,7 @@ async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { vi
 	let resizeScale = Math.min(IMAGE_DIMENSIONS.width / videoDimensions.width, IMAGE_DIMENSIONS.height / videoDimensions.height)
 	let thumbnailWidth = Math.floor(videoDimensions.width * resizeScale)
 	let thumbnailHeight = Math.floor(videoDimensions.height * resizeScale)
-	return new Promise((resolve, reject) => {
+	return new Promise<{ thumbnailWidth: number; thumbnailHeight: number }>((resolve, reject) => {
 		let start = performance.now()
 		ffmpeg(videoPath)
 			.screenshots({
@@ -40,7 +40,7 @@ async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { vi
 			})
 			.on("end", function () {
 				console.log(`Time taken to create thumbnail for video: ${thumbnailName}:`, performance.now() - start)
-				resolve(`${thumbnailPath}/${thumbnailName}.jpeg`)
+				resolve({ thumbnailWidth, thumbnailHeight })
 			})
 	})
 }
@@ -70,7 +70,11 @@ export async function handleVideos({
 			filesAndFolders.push({
 				name: `${parsedVideo.name}${parsedVideo.ext}`,
 				isDirectory: false,
-				thumbnail: thumbnail.replace("public", ""),
+				thumbnail: {
+					name: thumbnail.replace("public", ""),
+					width: dbThumbnail.thumbnailWidth,
+					height: dbThumbnail.thumbnailHeight,
+				},
 				size: readableBytes(stats.size),
 			})
 			return
@@ -83,22 +87,34 @@ export async function handleVideos({
 	3- the video is in the db but with different stats
 	*/
 	await mkdir(thumbnailPath, { recursive: true })
-	await createThumbnail({ videoPath: videoFile, thumbnailName: sanitizedName, thumbnailPath })
+	let { thumbnailWidth, thumbnailHeight } = await createThumbnail({
+		videoPath: videoFile,
+		thumbnailName: sanitizedName,
+		thumbnailPath,
+	})
 
-	let insertedThumbnail = await db
-		.insert(schema.thumbnails)
-		.values({ key: videoFile, stats })
-		.onConflictDoUpdate({
-			target: schema.thumbnails.key,
-			set: { stats },
-		})
-		.returning()
+	let insertedThumbnail = (
+		await db
+			.insert(schema.thumbnails)
+			.values({ key: videoFile, stats, thumbnailWidth, thumbnailHeight })
+			.onConflictDoUpdate({
+				target: schema.thumbnails.key,
+				set: { stats },
+			})
+			.returning()
+	)[0]
+	if (!insertedThumbnail) throw new Error("Couldn't insert the thumbnail into the db")
+
 	console.log(insertedThumbnail)
 
 	filesAndFolders.push({
 		name: `${parsedVideo.name}${parsedVideo.ext}`,
 		isDirectory: false,
-		thumbnail: thumbnail.replace("public", ""),
+		thumbnail: {
+			name: thumbnail.replace("public", ""),
+			width: insertedThumbnail.thumbnailWidth,
+			height: insertedThumbnail.thumbnailHeight,
+		},
 		size: readableBytes(stats.size),
 	})
 }

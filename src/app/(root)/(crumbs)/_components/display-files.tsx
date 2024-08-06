@@ -11,9 +11,17 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 		<div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
 			{filesAndFolders.map((item) => (
 				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-400 dark:shadow-slate-700">
-					<div className="aspect-[16/9] max-h-[240px]">
+					<div className="flex aspect-[16/9] max-h-[180px] items-center justify-center">
 						{/* Thumbnails and Icons */}
-						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for ${item.name}`} className="h-full object-contain" width={320} height={240} />}
+						{item.thumbnail && (
+							<Image
+								src={item.thumbnail.name}
+								alt={`thumbnail for ${item.name}`}
+								className="h-full object-contain"
+								width={item.thumbnail.width}
+								height={item.thumbnail.height}
+							/>
+						)}
 						{!item.thumbnail && (
 							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
 								<DisplayIcon
