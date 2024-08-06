@@ -64,9 +64,9 @@ async function testGetFilesAndFolders() {
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
-	await getFilesAndFolders("/home/mohamed/Desktop/videos/test/")
+	await getFilesAndFolders("/home/mohamed/Desktop/videos/imgs")
 }
-// void testGetFilesAndFolders()
+void testGetFilesAndFolders()
 async function selectDB() {
 	let res = await db.select().from(schema.thumbnails)
 	console.log(res)

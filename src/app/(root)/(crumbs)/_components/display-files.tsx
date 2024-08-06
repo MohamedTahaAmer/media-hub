@@ -11,19 +11,22 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 		<div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
 			{filesAndFolders.map((item) => (
 				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-400 dark:shadow-slate-700">
-					{/* Thumbnails and Icons */}
-					{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for video ${item.name}`} className="" width={320} height={240} />}
-					{!item.thumbnail && (
-						<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
-							<DisplayIcon
-								name={item.name}
-								isDirectory={item.isDirectory}
-								className={cn("px-[12.5%]", {
-									"py-3": item.isDirectory,
-								})}
-							/>
-						</Link>
-					)}
+					<div className="aspect-[3/2] max-h-[240px]">
+						{/* Thumbnails and Icons */}
+						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for ${item.name}`} className="h-full object-cover" width={320} height={240} />}
+						{!item.thumbnail && (
+							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
+								<DisplayIcon
+									alt={`thumbnail icon for ${item.name}`}
+									name={item.name}
+									isDirectory={item.isDirectory}
+									className={cn("px-[12.5%]", {
+										"py-3": item.isDirectory,
+									})}
+								/>
+							</Link>
+						)}
+					</div>
 
 					<DisplayFileText isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
 
@@ -55,12 +58,12 @@ function DisplayFileText({ isDirectory, name, dir }: { isDirectory: boolean; nam
 	)
 }
 
-async function DisplayIcon({ isDirectory, name, className }: { isDirectory: boolean; name: string; className: string }) {
+async function DisplayIcon({ isDirectory, name, className, alt }: { alt: string; isDirectory: boolean; name: string; className: string }) {
 	let Icon: undefined | ((_: LucideProps) => JSX.Element)
 	if (isDirectory) {
 		Icon = await getIcon(name, "Folder")
 	} else {
 		Icon = await getIcon(name, "File")
 	}
-	return <Icon className={className} />
+	return <Icon className={className} aria-label={alt} role="img" />
 }

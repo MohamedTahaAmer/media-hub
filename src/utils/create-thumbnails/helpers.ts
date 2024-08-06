@@ -38,15 +38,15 @@ export function sanitizeForHref(input: string): string {
 		.join("")
 }
 
+export function sanitizeDir(dir: string) {
+	let slugs = dir.split("/")
+	return slugs.map(sanitizeForHref).join("/")
+}
+
 export function readableBytes(bytes: number) {
 	if (bytes === 0) return "0 B"
 	const i = Math.floor(Math.log(bytes) / Math.log(1024))
 	return (bytes / Math.pow(1024, i)).toFixed(2) + " " + ["B", "KB", "MB", "GB", "TB"][i]
-}
-
-export function sanitizeDir(dir: string) {
-	let slugs = dir.split("/")
-	return slugs.map(sanitizeForHref).join("/")
 }
 
 export async function checkIfFileIsActual(file: string, type: "video" | "image") {

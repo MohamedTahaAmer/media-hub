@@ -5,8 +5,11 @@ import { doesFileExist } from ".."
 import { db, schema } from "../db/db"
 import { deepStrictEqual, readableBytes, sanitizeDir, sanitizeForHref } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
+import sharp from "sharp"
+import { imageSize } from "image-size"
 
 const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
+const IMAGE_DIMENSIONS = { width: 320, height: 240 }
 
 function getFileUniqueStats(stats: Stats) {
 	return {
@@ -25,7 +28,7 @@ async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { vi
 				timestamps: ["1%"],
 				filename: `${thumbnailName}.png`,
 				folder: thumbnailPath,
-				size: "320x240",
+				size: `${IMAGE_DIMENSIONS.height}x${IMAGE_DIMENSIONS.width}`,
 			})
 			.on("end", function () {
 				console.log(`Time taken to create thumbnail for video: ${thumbnailName}:`, performance.now() - start)
@@ -113,9 +116,11 @@ export async function handleImage({
 	let sanitizedDir = sanitizeDir(parsedImage.dir)
 	let thumbnailPath = path.join(PUBLIC_THUMBNAILS_FOLDER, sanitizedDir)
 	let stats = getFileUniqueStats(await stat(imageFile))
-	let thumbnail = path.join(thumbnailPath, `${sanitizeForHref(parsedImage.name)}${parsedImage.ext}`)
+	// let thumbnail = path.join(thumbnailPath, `${sanitizeForHref(parsedImage.name)}${parsedImage.ext}`)
+	let thumbnail = path.join(thumbnailPath, `${sanitizeForHref(parsedImage.name)}$.jpeg`)
 
 	let thumbnailExists = await doesFileExist(thumbnail)
+	// - if the thumbnail exists in the fs and in the db also has the same stats, then add it to the filesAndFolders array, other wise create a new thumbnail and update the db
 	if (thumbnailExists) {
 		let dbThumbnail = dbThumbnails.find((t) => t.key === imageFile)
 		let isSameStats = dbThumbnail && (await deepStrictEqual(dbThumbnail.stats, stats))
@@ -123,14 +128,29 @@ export async function handleImage({
 			filesAndFolders.push({
 				name: `${parsedImage.name}.${parsedImage.ext}`,
 				isDirectory: false,
-				thumbnail: `/thumbnails${sanitizedDir}/${sanitizeForHref(parsedImage.name)}${parsedImage.ext}`,
+				thumbnail: thumbnail.replace("public", ""),
 				size: readableBytes(stats.size),
 			})
 			return
 		}
 	}
+
 	await mkdir(thumbnailPath, { recursive: true })
-	await copyFile(imageFile, thumbnail)
+	// await copyFile(imageFile, thumbnail)
+
+	const dimensions = imageSize(imageFile)
+	if (!dimensions.height || !dimensions.width) {
+		throw new Error("Couldn't get the dimensions of the image")
+	}
+	console.log(dimensions.width, dimensions.height)
+	let resizeScale = Math.min(IMAGE_DIMENSIONS.width / dimensions.width, IMAGE_DIMENSIONS.height / dimensions.height)
+	let thumbnailWidth = Math.floor(dimensions.width * resizeScale)
+	let thumbnailHeight = Math.floor(dimensions.height * resizeScale)
+	sharp(imageFile)
+		.resize(thumbnailWidth, thumbnailHeight)
+		.toFile(thumbnail, (err, info) => {
+			console.log(err, info)
+		})
 	let insertedThumbnail = await db
 		.insert(schema.thumbnails)
 		.values({ key: imageFile, stats })
@@ -140,10 +160,11 @@ export async function handleImage({
 		})
 		.returning()
 	console.log(insertedThumbnail)
+	console.log(thumbnail.replace("public", ""))
 	filesAndFolders.push({
 		name: `${parsedImage.name}.${parsedImage.ext}`,
 		isDirectory: false,
-		thumbnail: `/thumbnails${sanitizedDir}/${sanitizeForHref(parsedImage.name)}${parsedImage.ext}`,
+		thumbnail: thumbnail.replace("public", ""),
 		size: readableBytes(stats.size),
 	})
 }
