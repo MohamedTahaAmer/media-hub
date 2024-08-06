@@ -13,7 +13,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-400 dark:shadow-slate-700">
 					<div className="aspect-[16/9] max-h-[240px]">
 						{/* Thumbnails and Icons */}
-						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for ${item.name}`} className="h-full object-cover" width={320} height={240} />}
+						{item.thumbnail && <Image src={item.thumbnail} alt={`thumbnail for ${item.name}`} className="h-full object-contain" width={320} height={240} />}
 						{!item.thumbnail && (
 							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
 								<DisplayIcon
