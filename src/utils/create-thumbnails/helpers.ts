@@ -1,3 +1,9 @@
+import { type Stats } from "fs"
+import type { FilesAndFolders } from "./types"
+
+export const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
+export  const IMAGE_DIMENSIONS = { width: 320, height: 180 }
+
 export async function deepStrictEqual<T>(obj1: T, obj2: T) {
 	let equal = true
 	try {
@@ -9,6 +15,7 @@ export async function deepStrictEqual<T>(obj1: T, obj2: T) {
 	}
 	return equal
 }
+
 export function sanitizeForHref(input: string): string {
 	const replacements: Record<string, string> = {
 		" ": "_",
@@ -53,4 +60,21 @@ export async function checkIfFileIsActual(file: string, type: "video" | "image")
 	let { fileTypeFromFile } = await import("node_modules/file-type/index")
 	let typeObj = await fileTypeFromFile(file)
 	return typeObj?.mime.startsWith(type)
+}
+
+export function getFileUniqueStats(stats: Stats) {
+	return {
+		size: stats.size,
+		ctime: stats.ctime.toISOString(),
+		mtime: stats.mtime.toISOString(),
+	}
+}
+
+export function handleDirectories({ filesAndFolders, path, name }: { filesAndFolders: FilesAndFolders; path: string; name: string }) {
+	filesAndFolders.push({
+		name,
+		isDirectory: true,
+		thumbnail: undefined,
+		size: undefined,
+	})
 }

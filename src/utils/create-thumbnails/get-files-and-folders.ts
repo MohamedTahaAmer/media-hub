@@ -2,9 +2,10 @@ import { like } from "drizzle-orm"
 import { readdir, stat } from "fs/promises"
 import path from "path"
 import { db, schema } from "../db/db"
+import { handleImage } from "./handle-img"
+import { handleVideos } from "./handle-video"
+import { checkIfFileIsActual, handleDirectories, readableBytes } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
-import { handleImage, handleVideos, handleDirectories } from "./handlers"
-import { checkIfFileIsActual, readableBytes } from "./helpers"
 
 // - function to get the folders and files inside a dir, also get the file stats, and if video, then create a thumbnail for it
 export async function getFilesAndFolders(dir: string) {
