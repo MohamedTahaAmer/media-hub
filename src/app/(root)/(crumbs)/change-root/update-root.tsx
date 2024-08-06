@@ -26,7 +26,10 @@ const UpdateRoot = ({ currentRootDir }: { currentRootDir: string }) => {
 			form.reset()
 		} catch (error: any) {
 			if (error instanceof Error) {
-				toast(error.message ?? "Sorry could not update root folder. Please try again", { richColors: true, style: { background: "red", color: "white" } })
+				toast(error.message ?? "Sorry could not update root folder. Please try again", {
+					richColors: true,
+					style: { background: "red", color: "white" },
+				})
 			}
 		}
 	}

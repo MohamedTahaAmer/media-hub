@@ -2,7 +2,7 @@ import { type Stats } from "fs"
 import type { FilesAndFolders } from "./types"
 
 export const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
-export  const IMAGE_DIMENSIONS = { width: 320, height: 180 }
+export const IMAGE_DIMENSIONS = { width: 320, height: 180 }
 
 export async function deepStrictEqual<T>(obj1: T, obj2: T) {
 	let equal = true
