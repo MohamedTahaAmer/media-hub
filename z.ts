@@ -66,7 +66,15 @@ async function testGetFilesAndFolders() {
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
 	await getFilesAndFolders("/home/mohamed/Desktop/videos/imgs")
 }
-void testGetFilesAndFolders()
+// void testGetFilesAndFolders()
+
+function testFluentFFmpegFfprobe() {
+	ffmpeg.ffprobe("/media/mohamed/640/DOWNLOADS/IDM/videos/Drizzle The TypeScript SQL.ORM.mkv", function (err, metadata) {
+		console.dir(metadata)
+	})
+}
+// testFluentFFmpegFfprobe()
+
 async function selectDB() {
 	let res = await db.select().from(schema.thumbnails)
 	console.log(res)

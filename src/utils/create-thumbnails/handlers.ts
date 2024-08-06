@@ -9,7 +9,7 @@ import sharp from "sharp"
 import { imageSize } from "image-size"
 
 const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
-const IMAGE_DIMENSIONS = { width: 320, height: 240 }
+const IMAGE_DIMENSIONS = { width: 320, height: 180 }
 
 function getFileUniqueStats(stats: Stats) {
 	return {
@@ -18,21 +18,42 @@ function getFileUniqueStats(stats: Stats) {
 		mtime: stats.mtime.toISOString(),
 	}
 }
-
+async function getVideoDimensions(videoPath: string) {
+	let { default: ffmpeg } = await import("fluent-ffmpeg")
+	return new Promise<{ width: number | undefined; height: number | undefined }>((resolve, reject) => {
+		ffmpeg.ffprobe(videoPath, (err, metadata) => {
+			if (err) {
+				reject(err)
+			}
+			resolve({
+				width: metadata.streams[0]?.width,
+				height: metadata.streams[0]?.height,
+			})
+		})
+	})
+}
 async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { videoPath: string; thumbnailName: string; thumbnailPath: string }) {
 	let { default: ffmpeg } = await import("fluent-ffmpeg")
+	let videoDimensions = await getVideoDimensions(videoPath)
+	if (!videoDimensions.width || !videoDimensions.height) {
+		throw new Error("Couldn't get the dimensions of the video")
+	}
+
+	let resizeScale = Math.min(IMAGE_DIMENSIONS.width / videoDimensions.width, IMAGE_DIMENSIONS.height / videoDimensions.height)
+	let thumbnailWidth = Math.floor(videoDimensions.width * resizeScale)
+	let thumbnailHeight = Math.floor(videoDimensions.height * resizeScale)
 	return new Promise((resolve, reject) => {
 		let start = performance.now()
 		ffmpeg(videoPath)
 			.screenshots({
 				timestamps: ["1%"],
-				filename: `${thumbnailName}.png`,
+				filename: `${thumbnailName}.jpeg`,
 				folder: thumbnailPath,
-				size: `${IMAGE_DIMENSIONS.height}x${IMAGE_DIMENSIONS.width}`,
+				size: `${thumbnailWidth}x${thumbnailHeight}`,
 			})
 			.on("end", function () {
 				console.log(`Time taken to create thumbnail for video: ${thumbnailName}:`, performance.now() - start)
-				resolve(`${thumbnailPath}/${thumbnailName}.png`)
+				resolve(`${thumbnailPath}/${thumbnailName}.jpeg`)
 			})
 	})
 }
@@ -60,7 +81,7 @@ export async function handleVideos({
 	let sanitizedName = sanitizeForHref(parsedVideo.name)
 	let sanitizedDir = sanitizeDir(parsedVideo.dir)
 	let thumbnailPath = path.join(PUBLIC_THUMBNAILS_FOLDER, sanitizedDir)
-	let thumbnail = path.join(thumbnailPath, `${sanitizedName}.png`)
+	let thumbnail = path.join(thumbnailPath, `${sanitizedName}.jpeg`)
 	let stats = getFileUniqueStats(await stat(videoFile))
 
 	let thumbnailExists = await doesFileExist(thumbnail)
@@ -71,7 +92,7 @@ export async function handleVideos({
 			filesAndFolders.push({
 				name: `${parsedVideo.name}${parsedVideo.ext}`,
 				isDirectory: false,
-				thumbnail: `/thumbnails${sanitizedDir}/${sanitizedName}.png`,
+				thumbnail: thumbnail.replace("public", ""),
 				size: readableBytes(stats.size),
 			})
 			return
@@ -99,7 +120,7 @@ export async function handleVideos({
 	filesAndFolders.push({
 		name: `${parsedVideo.name}${parsedVideo.ext}`,
 		isDirectory: false,
-		thumbnail: `/thumbnails${sanitizedDir}/${sanitizedName}.png`,
+		thumbnail: thumbnail.replace("public", ""),
 		size: readableBytes(stats.size),
 	})
 }
