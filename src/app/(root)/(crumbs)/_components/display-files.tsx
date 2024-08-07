@@ -8,27 +8,27 @@ import path from "path"
 
 const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
 	return (
-		<div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+		<div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 			{filesAndFolders.map((item) => (
-				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-400 dark:shadow-slate-700">
-					<div className="flex aspect-[16/9] max-h-[180px] items-center justify-center">
+				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-200 dark:shadow-slate-800">
+					<div className="flex aspect-[16/9] items-center justify-center">
 						{/* Thumbnails and Icons */}
 						{item.thumbnail && (
 							<Image
 								src={item.thumbnail.name}
 								alt={`thumbnail for ${item.name}`}
-								className="h-full object-contain"
+								className="grow object-contain"
 								width={item.thumbnail.width}
 								height={item.thumbnail.height}
 							/>
 						)}
 						{!item.thumbnail && (
-							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
+							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`} className="grow">
 								<DisplayIcon
 									alt={`thumbnail icon for ${item.name}`}
 									name={item.name}
 									isDirectory={item.isDirectory}
-									className={cn("px-[12.5%]", {
+									className={cn("size-full px-[12.5%]", {
 										"py-3": item.isDirectory,
 									})}
 								/>
@@ -36,7 +36,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 						)}
 					</div>
 
-					<DisplayFileText isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
+					<DisplayTitle isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
 
 					{/* size and download button for files */}
 					{!item.isDirectory && (
@@ -55,7 +55,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 
 export default DisplayFiles
 
-function DisplayFileText({ isDirectory, name, dir }: { isDirectory: boolean; name: string; dir: string }) {
+function DisplayTitle({ isDirectory, name, dir }: { isDirectory: boolean; name: string; dir: string }) {
 	let baseEndPoint = isDirectory ? "/dir/" : "/api/download/"
 	return (
 		<div className="truncate-two-lines pl-2">

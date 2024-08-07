@@ -4,11 +4,11 @@ import { doesFileExist } from ".."
 import { db, schema } from "../db/db"
 import { deepStrictEqual, getFileUniqueStats, IMAGE_DIMENSIONS, PUBLIC_THUMBNAILS_FOLDER, readableBytes, sanitizeDir, sanitizeForHref } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
+import Ffmpeg from "fluent-ffmpeg"
 
 async function getVideoDimensions(videoPath: string) {
-	let { default: ffmpeg } = await import("fluent-ffmpeg")
 	return new Promise<{ width: number | undefined; height: number | undefined }>((resolve, reject) => {
-		ffmpeg.ffprobe(videoPath, (err, metadata) => {
+		Ffmpeg.ffprobe(videoPath, (err, metadata) => {
 			if (err) {
 				reject(err)
 			}
@@ -20,7 +20,6 @@ async function getVideoDimensions(videoPath: string) {
 	})
 }
 async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { videoPath: string; thumbnailName: string; thumbnailPath: string }) {
-	let { default: ffmpeg } = await import("fluent-ffmpeg")
 	let videoDimensions = await getVideoDimensions(videoPath)
 	if (!videoDimensions.width || !videoDimensions.height) {
 		throw new Error("Couldn't get the dimensions of the video")
@@ -31,7 +30,7 @@ async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { vi
 	let thumbnailHeight = Math.floor(videoDimensions.height * resizeScale)
 	return new Promise<{ thumbnailWidth: number; thumbnailHeight: number }>((resolve, reject) => {
 		let start = performance.now()
-		ffmpeg(videoPath)
+		Ffmpeg(videoPath)
 			.screenshots({
 				timestamps: ["1%"],
 				filename: `${thumbnailName}.jpeg`,
@@ -105,7 +104,7 @@ export async function handleVideos({
 	)[0]
 	if (!insertedThumbnail) throw new Error("Couldn't insert the thumbnail into the db")
 
-	console.log(insertedThumbnail)
+	console.log("\x1b[1;33m%s\x1b[1;36m", "Inserted thumbnail:", insertedThumbnail.key, " \nWith id:", insertedThumbnail.id)
 
 	filesAndFolders.push({
 		name: `${parsedVideo.name}${parsedVideo.ext}`,

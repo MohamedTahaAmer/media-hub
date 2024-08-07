@@ -5,8 +5,8 @@ export const env = createEnv({
 	server: {
 		NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 		SQLITE_DB_NAME: z.string().default("sqlite.db"),
-		ROOT_DIR: z.string().default("/media/mohamed/640/Recordings/Uploads"),
-		UPLOAD_DIR: z.string().default("/media/mohamed/640/DOWNLOADS/IDM/videos"),
+		ROOT_DIR: z.string().default("/media/mohamed/640/DOWNLOADS/IDM/videos"),
+		UPLOAD_DIR: z.string().default("/media/mohamed/640/Recordings/Uploads"),
 	},
 
 	runtimeEnv: {

@@ -17,10 +17,15 @@ const UpdateRoot = ({ currentRootDir }: { currentRootDir: string }) => {
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 		let form = event.currentTarget as HTMLFormElement
-		let newRoot = (form[inputId] as HTMLInputElement).value
+		let newRoot = (form[inputId] as HTMLInputElement).value.trim()
+		if (newRoot === rootDir) {
+			toast("New root folder is same as current root folder.", {
+				richColors: true,
+			})
+			return
+		}
 		try {
 			let res = await handleRootChange(newRoot)
-
 			toast(res, { richColors: true, style: { background: "green", color: "white" } })
 			setRootDir(newRoot)
 			form.reset()

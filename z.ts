@@ -302,3 +302,13 @@ async function testFSStateSync() {
 	// }
 }
 // void testFSStateSync()
+
+async function testCleanupOldThumbnails() {
+	let { cleanupOldThumbnails } = await import("@/utils/create-thumbnails/cleanup-old-thumbnails")
+	let { getRootDir } = await import("@/utils/root-dir")
+
+	await cleanupOldThumbnails(getRootDir())
+	console.log("\x1b[1;32m%s\x1b[1;36m", getRootDir())
+	// await cleanupOldThumbnails("/home/mohamed/Desktop/videos/imgs")
+}
+// void testCleanupOldThumbnails()
