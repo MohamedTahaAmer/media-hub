@@ -29,7 +29,7 @@ export async function handleImage({
 		let isSameStats = dbThumbnail && (await deepStrictEqual(dbThumbnail.stats, stats))
 		if (dbThumbnail && isSameStats) {
 			filesAndFolders.push({
-				name: `${parsedImage.name}.${parsedImage.ext}`,
+				name: `${parsedImage.name}${parsedImage.ext}`,
 				isDirectory: false,
 				thumbnail: {
 					name: thumbnail,
@@ -70,7 +70,7 @@ export async function handleImage({
 	if (!insertedThumbnail) throw new Error("Couldn't insert the thumbnail")
 
 	filesAndFolders.push({
-		name: `${parsedImage.name}.${parsedImage.ext}`,
+		name: `${parsedImage.name}${parsedImage.ext}`,
 		isDirectory: false,
 		thumbnail: {
 			name: thumbnail,
