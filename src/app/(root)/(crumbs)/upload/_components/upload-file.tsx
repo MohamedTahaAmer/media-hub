@@ -94,13 +94,13 @@ const UploadFile: React.FC = () => {
 			console.log("Failed to upload file(s)")
 		}
 	}
-
 	return (
 		<div
 			style={{
-				height: "calc(100vh - 64px)",
+				// 64px for the navbar and 4rem for the breadcrumbs
+				height: "calc(100vh - 64px - 4rem)",
 			}}
-			className="flex max-w-7xl flex-col items-center justify-center gap-4 p-8"
+			className="flex max-w-7xl flex-col items-center justify-center gap-4 pt-4"
 		>
 			<h1 className="text-center text-2xl font-bold">{!areFilesSelected ? "Upload Files" : "Files to be uploaded"}</h1>
 			<form onSubmit={(e) => void handleSubmit(e)} encType="multipart/form-data" className="flex w-full grow flex-col gap-4">

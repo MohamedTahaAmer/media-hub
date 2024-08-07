@@ -10,7 +10,7 @@ export default function BreadCrumbsLayout({
 	return (
 		<>
 			<NavBreadCrumb root={root} />
-			<div id="videos-layout" className="pt-8">
+			<div id="videos-layout" className="pt-2">
 				{children}
 			</div>
 		</>

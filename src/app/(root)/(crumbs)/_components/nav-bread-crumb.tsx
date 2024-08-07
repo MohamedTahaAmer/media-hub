@@ -17,7 +17,7 @@ const NavBreadCrumb = ({ root = "" }: { root?: string }) => {
 	let pathName = usePathname()
 	let pathArray = decodeURIComponent(pathName).split("/").slice(2)
 	return (
-		<Breadcrumb className="fixed top-[56px] z-10 w-full max-w-[76rem] bg-background p-2 shadow-sm shadow-slate-200 dark:shadow-slate-700">
+		<Breadcrumb className="sticky top-[56px] bg-background p-2 shadow-sm shadow-slate-200 dark:shadow-slate-700">
 			<BreadcrumbList>
 				<BreadcrumbItem
 					className={cn("flex gap-2 font-bold", {

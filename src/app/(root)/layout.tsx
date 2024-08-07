@@ -9,7 +9,7 @@ export default function NavBarLayout({
 	return (
 		<>
 			<Navbar />
-			<div id="navbar-layout" className="mx-auto max-w-7xl px-8 pt-16 max-sm:px-4">
+			<div id="navbar-layout" className="mx-auto max-w-7xl px-4 pt-16 sm:px-8">
 				{children}
 			</div>
 			<Toaster />
