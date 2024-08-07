@@ -3,7 +3,7 @@ import { readdir } from "fs/promises"
 import path from "path"
 import { db, schema } from "../db/db"
 import { getFilesAndFolders } from "./get-files-and-folders"
-import { sanitizeDir, sanitizeForHref } from "./helpers"
+import { forbiddenDirs, sanitizeDir, sanitizeForHref } from "./helpers"
 import type { Thumbnail } from "./types"
 import { checkDirectoryExists } from ".."
 import { rm } from "fs/promises"
@@ -45,7 +45,7 @@ async function processDirectory(directoryPath: string) {
 		try {
 			const entries = await readdir(directoryPath, { withFileTypes: true })
 			for (const entry of entries) {
-				if (!entry.isDirectory()) continue
+				if (!entry.isDirectory() || forbiddenDirs.includes(entry.name)) continue
 				let currentDir = path.join(directoryPath, entry.name)
 				console.log("Processing directory:", currentDir)
 				let thumbNailsForCurrentDir = await getThumbnailsFromGetFilesAndFolders(currentDir)
@@ -67,6 +67,8 @@ function fileDirToThumbnail(fileDir: string) {
 }
 
 async function getThumbnailsFromGetFilesAndFolders(dir: string) {
-	let thumbNailsForCurrentDir = (await getFilesAndFolders(dir)).filter((file) => file.thumbnail?.name).map((file) => file.thumbnail?.name!)
+	let returnedFilesAndFolders = await getFilesAndFolders(dir)
+	if (typeof returnedFilesAndFolders === "string") return []
+	let thumbNailsForCurrentDir = returnedFilesAndFolders.filter((file) => file.thumbnail?.name).map((file) => file.thumbnail?.name!)
 	return thumbNailsForCurrentDir
 }

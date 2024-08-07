@@ -6,35 +6,29 @@ import Image from "next/image"
 import Link from "next/link"
 import path from "path"
 
-const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
+const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders | string; directoryName?: string }) => {
+	if (typeof filesAndFolders === "string") return <div>{filesAndFolders}</div>
 	return (
 		<div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 			{filesAndFolders.map((item) => (
 				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-200 dark:shadow-slate-800">
-					<div className="flex aspect-[16/9] items-center justify-center">
-						{/* Thumbnails and Icons */}
-						{item.thumbnail && (
+					{/* Thumbnails and Icons */}
+					{item.thumbnail && (
+						<div className="flex aspect-[16/9] items-center justify-center">
 							<Image
 								src={item.thumbnail.name}
 								alt={`thumbnail for ${item.name}`}
-								className="grow object-contain"
+								className={cn("object-contain", { grow: item.thumbnail.width / item.thumbnail.height === 16 / 9 })}
 								width={item.thumbnail.width}
 								height={item.thumbnail.height}
 							/>
-						)}
-						{!item.thumbnail && (
-							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`} className="grow">
-								<DisplayIcon
-									alt={`thumbnail icon for ${item.name}`}
-									name={item.name}
-									isDirectory={item.isDirectory}
-									className={cn("size-full px-[12.5%]", {
-										"py-3": item.isDirectory,
-									})}
-								/>
-							</Link>
-						)}
-					</div>
+						</div>
+					)}
+					{!item.thumbnail && (
+						<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
+							<DisplayIcon alt={`thumbnail icon for ${item.name}`} name={item.name} isDirectory={item.isDirectory} className={cn("px-[17.5%]")} />
+						</Link>
+					)}
 
 					<DisplayTitle isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
 

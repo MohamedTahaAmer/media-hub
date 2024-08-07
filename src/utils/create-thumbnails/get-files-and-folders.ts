@@ -4,13 +4,23 @@ import path from "path"
 import { db, schema } from "../db/db"
 import { handleImage } from "./handle-img"
 import { handleVideos } from "./handle-video"
-import { checkIfFileIsActual, handleDirectories, readableBytes } from "./helpers"
+import { checkIfFileIsActual, forbiddenDirs, handleDirectories, readableBytes } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
 
-// - function to get the folders and files inside a dir, also get the file stats, and if video, then create a thumbnail for it
-export async function getFilesAndFolders(dir: string) {
+function cleanDir(dir: string) {
 	// if dir ends with a slash, remove it
-	if (dir.endsWith("/")) dir = dir.slice(0, -1)
+	if (dir.endsWith("/")) return dir.slice(0, -1)
+
+	// if the dir is forbidden, return
+	let lastFolder = dir.split("/").pop() ?? dir // if it doesn't have / then it's the root dir
+	if (forbiddenDirs.includes(lastFolder)) return { error: "This Folder Contain Too Much Files to Process" }
+	return dir
+}
+// - function to get the folders and files inside a dir, also get the file stats, and if video, then create a thumbnail for it
+export async function getFilesAndFolders(_dir: string) {
+	let dir = cleanDir(_dir)
+	// if (dir.error) return dir.error
+	if (typeof dir !== "string") return dir.error
 	// get all the thumbnails in the db that have the same dir as the current dir, not to make a separate db query for each file in this dir
 	let dbThumbnails = (await db
 		.select()
