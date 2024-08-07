@@ -1,11 +1,11 @@
 "use server"
-import { enableCleanup } from "@/utils/create-thumbnails/cleanup-old-thumbnails"
+import { globalCache } from "@/utils/global-this"
 import { setRootDir } from "@/utils/root-dir"
 import { revalidatePath } from "next/cache"
 
 export async function handleRootChange(newRoot: string) {
 	await setRootDir(newRoot)
-	enableCleanup()
+	globalCache.didCleanUp = false
 	revalidatePath("/")
 	return "Root Folder Updated Successfully"
 }

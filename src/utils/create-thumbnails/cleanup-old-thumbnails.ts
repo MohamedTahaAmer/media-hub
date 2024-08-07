@@ -7,15 +7,11 @@ import { forbiddenDirs, sanitizeDir, sanitizeForHref } from "./helpers"
 import type { Thumbnail } from "./types"
 import { checkDirectoryExists } from ".."
 import { rm } from "fs/promises"
+import { globalCache } from "../global-this"
 
-export const globalForRootDir = globalThis as unknown as {
-	didCleanUp: boolean
-}
-export function enableCleanup() {
-	globalForRootDir.didCleanUp = false
-}
 export async function cleanupOldThumbnails(rootDir: string) {
-	if (globalForRootDir.didCleanUp) return
+	if (globalCache.didCleanUp) return
+	await checkDirectoryExists(rootDir)
 	console.log("\x1b[1;33m%s\x1b[1;36m", "Cleaning up old thumbnails for root directory:", rootDir)
 	let thumbnailsForExistingFiles = await processDirectory(rootDir)
 	if (!thumbnailsForExistingFiles) return
@@ -33,12 +29,11 @@ export async function cleanupOldThumbnails(rootDir: string) {
 		await db.delete(schema.thumbnails).where(eq(schema.thumbnails.key, thumbnailKey.key))
 		await rm(path.join("public", thumbnailKey.dir))
 	}
-	globalForRootDir.didCleanUp = true
+	globalCache.didCleanUp = true
 }
 
 async function processDirectory(directoryPath: string) {
 	let thumbnailsForExistingFiles: string[] = []
-	await checkDirectoryExists(directoryPath)
 	console.log("Processing directory:", directoryPath)
 	thumbnailsForExistingFiles.push(...(await getThumbnailsFromGetFilesAndFolders(directoryPath)))
 	async function loopOverDirs(directoryPath: string) {

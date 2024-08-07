@@ -86,13 +86,13 @@ async function selectDistinct() {
 }
 // void selectDistinct()
 async function insertDB() {
-	let res = await db.insert(schema.thumbnails).values({ key: "videoNameWithoutExtension-1", stats: "stats" }).returning()
+	let res = await db.insert(schema.thumbnails).values({ key: "videoNameWithoutExtension-1", stats: "stats", thumbnailHeight: 2, thumbnailWidth: 2 }).returning()
 	console.log(res)
 }
 // void insertDB()
 async function insertObject() {
 	let stats = { a: 1, b: 2 }
-	let res = await db.insert(schema.thumbnails).values({ key: "videoNameWithoutExtension-2", stats }).returning()
+	let res = await db.insert(schema.thumbnails).values({ key: "videoNameWithoutExtension-2", stats, thumbnailHeight: 2, thumbnailWidth: 2 }).returning()
 	console.log(res)
 }
 // void insertObject()
@@ -106,7 +106,7 @@ async function upsertDB() {
 	let stats = "new stats -1"
 	let res = await db
 		.insert(schema.thumbnails)
-		.values({ key: "videoNameWithoutExtension", stats })
+		.values({ key: "videoNameWithoutExtension", stats, thumbnailHeight: 2, thumbnailWidth: 2 })
 		.onConflictDoUpdate({
 			target: schema.thumbnails.key,
 			set: { stats },
@@ -312,3 +312,8 @@ async function testCleanupOldThumbnails() {
 	// await cleanupOldThumbnails("/home/mohamed/Desktop/videos/imgs")
 }
 // void testCleanupOldThumbnails()
+
+function testGlobalThis() {
+	console.log(globalThis)
+}
+// testGlobalThis()
