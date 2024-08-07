@@ -1,12 +1,11 @@
+import { checkIfClientIsSameAsServer } from "@/utils/next-js-helper"
 import { getRootDir } from "@/utils/root-dir"
+import { notFound } from "next/navigation"
 import FullScreenBg from "./full-screen-bg"
 import UpdateRoot from "./update-root"
-import { notFound } from "next/navigation"
-import { getHeaders } from "@/utils/next.-js-helper"
 
 const Page = () => {
-	let headers = getHeaders()
-	if (headers["x-forwarded-for"] !== "::1") return notFound()
+	if (!checkIfClientIsSameAsServer()) return notFound()
 	return (
 		<>
 			<FullScreenBg />
