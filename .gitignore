@@ -53,3 +53,6 @@ drizzle/*
 
 # dump files
 y-dump.ts
+
+# thumbnails
+thumbnails/*

@@ -317,3 +317,6 @@ function testGlobalThis() {
 	console.log(globalThis)
 }
 // testGlobalThis()
+function testRootExport() {
+	console.log("Root Export")
+}

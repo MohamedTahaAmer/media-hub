@@ -1,7 +1,8 @@
 import { type Stats } from "fs"
 import type { FilesAndFolders } from "./types"
 
-export const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
+// export const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
+export const PUBLIC_THUMBNAILS_FOLDER = "thumbnails"
 export const IMAGE_DIMENSIONS = { width: 320, height: 180 }
 export let forbiddenDirs: string[] = [".next", "dist", "node_modules", ".git", "public", "components"]
 
@@ -37,7 +38,8 @@ export function sanitizeForHref(input: string): string {
 		",": "_2C",
 		"/": "_2F",
 		":": "_3A",
-		"：": "_3B",
+		"：": "_4B",
+		"!": "_5B",
 	}
 
 	return input

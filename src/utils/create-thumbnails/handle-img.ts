@@ -4,15 +4,7 @@ import path from "path"
 import sharp from "sharp"
 import { doesFileExist } from ".."
 import { db, schema } from "../db/db"
-import {
-	deepStrictEqual,
-	getFileUniqueStats,
-	IMAGE_DIMENSIONS,
-	PUBLIC_THUMBNAILS_FOLDER,
-	readableBytes,
-	sanitizeDir,
-	sanitizeForHref,
-} from "./helpers"
+import { deepStrictEqual, getFileUniqueStats, IMAGE_DIMENSIONS, PUBLIC_THUMBNAILS_FOLDER, readableBytes, sanitizeDir, sanitizeForHref } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
 
 export async function handleImage({
@@ -40,7 +32,7 @@ export async function handleImage({
 				name: `${parsedImage.name}.${parsedImage.ext}`,
 				isDirectory: false,
 				thumbnail: {
-					name: thumbnail.replace("public", ""),
+					name: thumbnail,
 					width: dbThumbnail.thumbnailWidth,
 					height: dbThumbnail.thumbnailHeight,
 				},
@@ -81,7 +73,7 @@ export async function handleImage({
 		name: `${parsedImage.name}.${parsedImage.ext}`,
 		isDirectory: false,
 		thumbnail: {
-			name: thumbnail.replace("public", ""),
+			name: thumbnail,
 			width: insertedThumbnail.thumbnailWidth,
 			height: insertedThumbnail.thumbnailHeight,
 		},

@@ -27,7 +27,7 @@ export async function cleanupOldThumbnails(rootDir: string) {
 
 	for (const thumbnailKey of thumbnailKeysToDelete) {
 		await db.delete(schema.thumbnails).where(eq(schema.thumbnails.key, thumbnailKey.key))
-		await rm(path.join("public", thumbnailKey.dir))
+		await rm(thumbnailKey.dir)
 	}
 	globalCache.didCleanUp = true
 }
@@ -57,7 +57,7 @@ async function processDirectory(directoryPath: string) {
 
 function fileDirToThumbnail(fileDir: string) {
 	let parsedFile = path.parse(fileDir)
-	let thumbnail = path.join("/thumbnails", sanitizeDir(parsedFile.dir), sanitizeForHref(parsedFile.name) + ".jpeg")
+	let thumbnail = path.join("thumbnails", sanitizeDir(parsedFile.dir), sanitizeForHref(parsedFile.name) + ".jpeg")
 	return thumbnail
 }
 

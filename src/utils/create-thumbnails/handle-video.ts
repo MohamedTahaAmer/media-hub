@@ -70,7 +70,7 @@ export async function handleVideos({
 				name: `${parsedVideo.name}${parsedVideo.ext}`,
 				isDirectory: false,
 				thumbnail: {
-					name: thumbnail.replace("public", ""),
+					name: thumbnail,
 					width: dbThumbnail.thumbnailWidth,
 					height: dbThumbnail.thumbnailHeight,
 				},
@@ -110,7 +110,7 @@ export async function handleVideos({
 		name: `${parsedVideo.name}${parsedVideo.ext}`,
 		isDirectory: false,
 		thumbnail: {
-			name: thumbnail.replace("public", ""),
+			name: thumbnail,
 			width: insertedThumbnail.thumbnailWidth,
 			height: insertedThumbnail.thumbnailHeight,
 		},

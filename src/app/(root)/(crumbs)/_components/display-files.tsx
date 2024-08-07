@@ -15,13 +15,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 					{/* Thumbnails and Icons */}
 					{item.thumbnail && (
 						<div className="flex aspect-[16/9] items-center justify-center">
-							<Image
-								src={item.thumbnail.name}
-								alt={`thumbnail for ${item.name}`}
-								className={cn("object-contain", { grow: item.thumbnail.width / item.thumbnail.height === 16 / 9 })}
-								width={item.thumbnail.width}
-								height={item.thumbnail.height}
-							/>
+							<DynamicImage name={item.thumbnail.name} width={item.thumbnail.width} height={item.thumbnail.height} />
 						</div>
 					)}
 					{!item.thumbnail && (
@@ -48,6 +42,14 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 }
 
 export default DisplayFiles
+
+function DynamicImage({ name, width, height }: { name: string; width: number; height: number }) {
+	const thumbnailsContext = require.context("../../../../../thumbnails", true, /\.jpeg$/)
+
+	let img = thumbnailsContext(`./${name.replace("thumbnails/", "")}`).default
+
+	return <Image src={img} alt={`thumbnail for ${name}`} className={cn("object-contain", { grow: width / height === 16 / 9 })} />
+}
 
 function DisplayTitle({ isDirectory, name, dir }: { isDirectory: boolean; name: string; dir: string }) {
 	let baseEndPoint = isDirectory ? "/dir/" : "/api/download/"
