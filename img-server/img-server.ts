@@ -14,7 +14,18 @@ app.get("/", (req, res) => {
 	res.send("Image server is running. Access images by navigating to /image.jpg")
 })
 export function startServer() {
-	app.listen(PORT, HOST, () => {
+	const server = app.listen(PORT, HOST, () => {
 		console.log(`Server is running on http://${HOST}:${PORT}`)
 	})
+	server.on("error", (error) => {
+		if (error.code === "EADDRINUSE") {
+			console.error(`Port ${PORT} is already in use. Please choose another port.`)
+		} else {
+			console.error("\x1b[1;31m%s\x1b[1;36m", error.message)
+		}
+	})
+	server.on("close", () => {
+		console.log("\x1b[1;33m%s\x1b[1;36m", "Server is closing...")
+	})
+	return server
 }

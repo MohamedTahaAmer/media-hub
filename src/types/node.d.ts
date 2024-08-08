@@ -24,3 +24,8 @@ declare namespace NodeJS {
 		}
 	}
 }
+
+// add .code to the Error type
+interface Error {
+	code?: string
+}
