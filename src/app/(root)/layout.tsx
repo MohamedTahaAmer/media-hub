@@ -1,11 +1,13 @@
 import { Toaster } from "sonner"
 import Navbar from "./_components/navbar"
+import { startImgServer } from "@/utils/start-img-server"
 
 export default function NavBarLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	startImgServer()
 	return (
 		<>
 			<Navbar />

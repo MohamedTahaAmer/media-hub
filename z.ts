@@ -13,68 +13,28 @@ import path from "path"
 // const sqlite = new Database(env.SQLITE_DB_NAME)
 // export const db = drizzle(sqlite)
 
-function testFluentFfmpeg() {
-	// let img = ffmpeg("/media/mohamed/640/DOWNLOADS/IDM/videos/React Compiler： In-Depth Beyond React Conf 2024.mp4'").size("640x480")
-	// console.log(img)
-	let videoPath = "/media/mohamed/640/DOWNLOADS/IDM/videos/"
-	let videoName = "Drizzle The TypeScript SQL.ORM.mkv"
-	const parsedPath = path.parse(videoName)
-	const videoNameWithoutExtension = parsedPath.name
-	console.log(videoNameWithoutExtension)
-	console.log(parsedPath.ext)
-
-	let start = performance.now()
-	ffmpeg(videoPath + videoName)
-		.screenshots({
-			timestamps: ["1"],
-			filename: `${videoNameWithoutExtension}.png`,
-			folder: "/media/mohamed/640/DOWNLOADS/IDM/videos/imgs",
-			size: "320x240",
-		})
-		.on("end", function () {
-			console.log("Time taken:", performance.now() - start)
-		})
-}
-// testFluentFfmpeg()
-function testFluentFfmpeg2() {
-	// let img = ffmpeg("/media/mohamed/640/DOWNLOADS/IDM/videos/React Compiler： In-Depth Beyond React Conf 2024.mp4'").size("640x480")
-	// console.log(img)
-	let videoPath = "/media/mohamed/640/DOWNLOADS/IDM/videos/"
-	let videoName = "Drizzle The TypeScript SQL.ORM.mkv"
-	const parsedPath = path.parse(videoName)
-	const videoNameWithoutExtension = parsedPath.name
-	console.log(videoNameWithoutExtension)
-	console.log(parsedPath.ext)
-
-	let start = performance.now()
-	ffmpeg(videoPath + videoName)
-		.screenshots({
-			timestamps: ["1200"],
-			filename: `${videoNameWithoutExtension}.png`,
-			folder: "/media/mohamed/640/DOWNLOADS/IDM/videos/imgs",
-			size: "320x240",
-		})
-		.on("end", function () {
-			console.log("Time taken:", performance.now() - start)
-		})
-}
-// testFluentFfmpeg2()
 async function testGetFilesAndFolders() {
 	let { getFilesAndFolders } = await import("@/utils/create-thumbnails/get-files-and-folders")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/1/2")
 	// await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/2/1")
-	await getFilesAndFolders("/home/mohamed/Desktop/videos/imgs")
+	await getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/test/3")
 }
 // void testGetFilesAndFolders()
+async function testCleanupOldThumbnails() {
+	let { cleanupOldThumbnails } = await import("@/utils/create-thumbnails/cleanup-old-thumbnails")
+	let { getRootDir } = await import("@/utils/root-dir")
 
+	// await cleanupOldThumbnails(getRootDir())
+	await cleanupOldThumbnails("/media/mohamed/640/DOWNLOADS/IDM/videos/test/3")
+}
+void testCleanupOldThumbnails()
 function testFluentFFmpegFfprobe() {
 	ffmpeg.ffprobe("/media/mohamed/640/DOWNLOADS/IDM/videos/Drizzle The TypeScript SQL.ORM.mkv", function (err, metadata) {
 		console.dir(metadata)
 	})
 }
 // testFluentFFmpegFfprobe()
-
 async function selectDB() {
 	let res = await db.select().from(schema.thumbnails)
 	console.log(res)
@@ -162,7 +122,6 @@ async function testNodeStrictDeepEqual() {
 	console.log(a === b)
 }
 // void testNodeStrictDeepEqual()
-
 function replaceInvalidChars(input: string) {
 	// Define a regular expression that matches any character that is not a letter or number.
 	const invalidCharRegex = /[^a-zA-Z0-9]/g
@@ -170,7 +129,6 @@ function replaceInvalidChars(input: string) {
 	console.log(input.replace(invalidCharRegex, "_"))
 }
 // replaceInvalidChars("Drizzle The TypeScript SQL.ORM.mkv")
-
 function parsedPath() {
 	// let videoName = "root/test/test2/Drizzle The TypeScript SQL.ORM.mkv"
 	let videoName = "/root/test/test2/Drizzle The.txt"
@@ -178,7 +136,6 @@ function parsedPath() {
 	console.log(parsedPath)
 }
 // parsedPath()
-
 async function testFileType() {
 	// @ts-expect-error // - the fileTypeFromFile is there in the index.js file, but I don't know why TS is looking inside the core.js file only
 	let { fileTypeFromFile: s } = await import("file-type")
@@ -198,7 +155,6 @@ async function testFileType() {
 	return
 }
 // void testFileType()
-
 function splitVsArray() {
 	console.time("Array.from")
 	for (let i = 0; i < 100000; i++) {
@@ -212,7 +168,6 @@ function splitVsArray() {
 	console.timeEnd("split")
 }
 // splitVsArray()
-
 function sanitizeForHref(input: string) {
 	const replacements: Record<string, string> = {
 		" ": "_",
@@ -247,10 +202,7 @@ function sanitizeForHref(input: string) {
 
 	console.log(sanitizedStr)
 }
-
-// sanitizeForHref("Next.js： Authentication (Best Practices for Server Components, Actions, Middleware)")
 // sanitizeForHref("d:_d")
-
 async function testReactRenderToString() {
 	// let React = require("react")
 	// let ReactDOMServer = require("react-dom/server")
@@ -263,7 +215,6 @@ async function testReactRenderToString() {
 	// console.log(html)
 }
 // void testReactRenderToString()
-
 async function testAsyncAwait() {
 	console.log("first")
 	await new Promise((resolve) => {
@@ -276,14 +227,12 @@ async function testAsyncAwait() {
 	console.log("last")
 }
 // void testAsyncAwait()
-
 async function testSyncMemoryCache() {
 	let { setRootDir, getRootDir } = await import("@/utils/root-dir")
 	await setRootDir("root/es")
 	console.log(getRootDir())
 }
 // void testSyncMemoryCache()
-
 async function testFSStateSync() {
 	let { statSync } = await import("fs")
 	let stats = statSync("/home/mohamed/Desktop/videos/Drizzle The TypeScript SQL.ORM.mkv")
@@ -302,17 +251,6 @@ async function testFSStateSync() {
 	// }
 }
 // void testFSStateSync()
-
-async function testCleanupOldThumbnails() {
-	let { cleanupOldThumbnails } = await import("@/utils/create-thumbnails/cleanup-old-thumbnails")
-	let { getRootDir } = await import("@/utils/root-dir")
-
-	await cleanupOldThumbnails(getRootDir())
-	console.log("\x1b[1;32m%s\x1b[1;36m", getRootDir())
-	// await cleanupOldThumbnails("/home/mohamed/Desktop/videos/imgs")
-}
-// void testCleanupOldThumbnails()
-
 function testGlobalThis() {
 	console.log(globalThis)
 }
@@ -320,3 +258,56 @@ function testGlobalThis() {
 function testRootExport() {
 	console.log("Root Export")
 }
+// testRootExport()
+function testFluentFfmpeg() {
+	// let img = ffmpeg("/media/mohamed/640/DOWNLOADS/IDM/videos/React Compiler： In-Depth Beyond React Conf 2024.mp4'").size("640x480")
+	// console.log(img)
+	let videoPath = "/media/mohamed/640/DOWNLOADS/IDM/videos/"
+	let videoName = "Drizzle The TypeScript SQL.ORM.mkv"
+	const parsedPath = path.parse(videoName)
+	const videoNameWithoutExtension = parsedPath.name
+	console.log(videoNameWithoutExtension)
+	console.log(parsedPath.ext)
+
+	let start = performance.now()
+	ffmpeg(videoPath + videoName)
+		.screenshots({
+			timestamps: ["1"],
+			filename: `${videoNameWithoutExtension}.png`,
+			folder: "/media/mohamed/640/DOWNLOADS/IDM/videos/imgs",
+			size: "320x240",
+		})
+		.on("end", function () {
+			console.log("Time taken:", performance.now() - start)
+		})
+}
+// testFluentFfmpeg()
+function testFluentFfmpeg2() {
+	// let img = ffmpeg("/media/mohamed/640/DOWNLOADS/IDM/videos/React Compiler： In-Depth Beyond React Conf 2024.mp4'").size("640x480")
+	// console.log(img)
+	let videoPath = "/media/mohamed/640/DOWNLOADS/IDM/videos/"
+	let videoName = "Drizzle The TypeScript SQL.ORM.mkv"
+	const parsedPath = path.parse(videoName)
+	const videoNameWithoutExtension = parsedPath.name
+	console.log(videoNameWithoutExtension)
+	console.log(parsedPath.ext)
+
+	let start = performance.now()
+	ffmpeg(videoPath + videoName)
+		.screenshots({
+			timestamps: ["1200"],
+			filename: `${videoNameWithoutExtension}.png`,
+			folder: "/media/mohamed/640/DOWNLOADS/IDM/videos/imgs",
+			size: "320x240",
+		})
+		.on("end", function () {
+			console.log("Time taken:", performance.now() - start)
+		})
+}
+// testFluentFfmpeg2()
+async function testDoesFileExist() {
+	let { doesFileExist } = await import("@/utils/index")
+	console.log(await doesFileExist("img-server/thumbnails/s.jpeg"))
+	console.log(await doesFileExist("img-server/thumbnails/media/mohamed/640/DOWNLOADS/IDM/videos/test/3/Performance_insights_panel_DevToolsTips.jpeg"))
+}
+// void testDoesFileExist()

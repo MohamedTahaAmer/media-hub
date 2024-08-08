@@ -1,13 +1,12 @@
 import { eq, like } from "drizzle-orm"
-import { readdir } from "fs/promises"
+import { readdir, rm } from "fs/promises"
 import path from "path"
-import { db, schema } from "../db/db"
-import { getFilesAndFolders } from "./get-files-and-folders"
-import { forbiddenDirs, sanitizeDir, sanitizeForHref } from "./helpers"
-import type { Thumbnail } from "./types"
 import { checkDirectoryExists } from ".."
-import { rm } from "fs/promises"
+import { db, schema } from "../db/db"
 import { globalCache } from "../global-this"
+import { getFilesAndFolders } from "./get-files-and-folders"
+import { forbiddenDirs, PUBLIC_THUMBNAILS_FOLDER, sanitizeDir, sanitizeForHref } from "./helpers"
+import type { Thumbnail } from "./types"
 
 export async function cleanupOldThumbnails(rootDir: string) {
 	if (globalCache.didCleanUp) return
@@ -22,10 +21,10 @@ export async function cleanupOldThumbnails(rootDir: string) {
 
 	let allThumbnails = dbThumbnails.map((thumbnail) => ({ dir: fileDirToThumbnail(thumbnail.key), key: thumbnail.key }))
 
-	let thumbnailKeysToDelete = allThumbnails.filter((thumbnail) => !thumbnailsForExistingFiles.includes(thumbnail.dir))
-	console.log("thumbnails to delete:", thumbnailKeysToDelete)
+	let thumbnailToDelete = allThumbnails.filter((thumbnail) => !thumbnailsForExistingFiles.includes(thumbnail.dir))
+	console.log("thumbnails to delete:", thumbnailToDelete)
 
-	for (const thumbnailKey of thumbnailKeysToDelete) {
+	for (const thumbnailKey of thumbnailToDelete) {
 		await db.delete(schema.thumbnails).where(eq(schema.thumbnails.key, thumbnailKey.key))
 		await rm(thumbnailKey.dir)
 	}
@@ -57,13 +56,15 @@ async function processDirectory(directoryPath: string) {
 
 function fileDirToThumbnail(fileDir: string) {
 	let parsedFile = path.parse(fileDir)
-	let thumbnail = path.join("thumbnails", sanitizeDir(parsedFile.dir), sanitizeForHref(parsedFile.name) + ".jpeg")
+	let thumbnail = path.join(PUBLIC_THUMBNAILS_FOLDER, sanitizeDir(parsedFile.dir), sanitizeForHref(parsedFile.name) + ".jpeg")
 	return thumbnail
 }
 
 async function getThumbnailsFromGetFilesAndFolders(dir: string) {
 	let returnedFilesAndFolders = await getFilesAndFolders(dir)
 	if (typeof returnedFilesAndFolders === "string") return []
-	let thumbNailsForCurrentDir = returnedFilesAndFolders.filter((file) => file.thumbnail?.name).map((file) => file.thumbnail?.name!)
+	let thumbNailsForCurrentDir = returnedFilesAndFolders
+		.filter((file) => file.thumbnail?.name)
+		.map((file) => path.join(PUBLIC_THUMBNAILS_FOLDER, file.thumbnail!.name))
 	return thumbNailsForCurrentDir
 }

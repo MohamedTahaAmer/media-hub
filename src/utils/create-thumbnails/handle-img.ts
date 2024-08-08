@@ -32,7 +32,7 @@ export async function handleImage({
 				name: `${parsedImage.name}${parsedImage.ext}`,
 				isDirectory: false,
 				thumbnail: {
-					name: thumbnail,
+					name: thumbnail.replace(PUBLIC_THUMBNAILS_FOLDER, ""),
 					width: dbThumbnail.thumbnailWidth,
 					height: dbThumbnail.thumbnailHeight,
 				},
@@ -73,7 +73,7 @@ export async function handleImage({
 		name: `${parsedImage.name}${parsedImage.ext}`,
 		isDirectory: false,
 		thumbnail: {
-			name: thumbnail,
+			name: thumbnail.replace(PUBLIC_THUMBNAILS_FOLDER, ""),
 			width: insertedThumbnail.thumbnailWidth,
 			height: insertedThumbnail.thumbnailHeight,
 		},

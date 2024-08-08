@@ -56,3 +56,4 @@ y-dump.ts
 
 # thumbnails
 thumbnails/*
+img-server/thumbnails/*

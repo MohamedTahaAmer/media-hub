@@ -1,10 +1,12 @@
 import { cn } from "@/lib/utils"
+import { getLocalIpAddress } from "@/utils"
 import type { FilesAndFolders } from "@/utils/create-thumbnails/types"
 import { getIcon } from "@/utils/get-icon"
 import { DownloadIcon, type LucideProps } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import path from "path"
+import { PORT } from "~/img-server/img-server"
 
 const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders | string; directoryName?: string }) => {
 	if (typeof filesAndFolders === "string") return <div>{filesAndFolders}</div>
@@ -43,12 +45,14 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 
 export default DisplayFiles
 
-function DynamicImage({ name, width, height }: { name: string; width: number; height: number }) {
-	const thumbnailsContext = require.context("../../../../../thumbnails", true, /\.jpeg$/)
+async function DynamicImage({ name, width, height }: { name: string; width: number; height: number }) {
+	let Host = await getLocalIpAddress()
+	let port = PORT
+	let imgURL = `http://${Host}:${port}${name}`
 
-	let img = thumbnailsContext(`./${name.replace("thumbnails/", "")}`).default
-
-	return <Image src={img} alt={`thumbnail for ${name}`} className={cn("object-contain", { grow: width / height === 16 / 9 })} />
+	return (
+		<Image src={imgURL} alt={`thumbnail for ${name}`} className={cn("object-contain", { grow: width / height === 16 / 9 })} width={width} height={height} />
+	)
 }
 
 function DisplayTitle({ isDirectory, name, dir }: { isDirectory: boolean; name: string; dir: string }) {
