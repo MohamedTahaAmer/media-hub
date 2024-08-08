@@ -28,7 +28,7 @@ async function testCleanupOldThumbnails() {
 	// await cleanupOldThumbnails(getRootDir())
 	await cleanupOldThumbnails("/media/mohamed/640/DOWNLOADS/IDM/videos/test/3")
 }
-void testCleanupOldThumbnails()
+// void testCleanupOldThumbnails()
 function testFluentFFmpegFfprobe() {
 	ffmpeg.ffprobe("/media/mohamed/640/DOWNLOADS/IDM/videos/Drizzle The TypeScript SQL.ORM.mkv", function (err, metadata) {
 		console.dir(metadata)
@@ -311,3 +311,8 @@ async function testDoesFileExist() {
 	console.log(await doesFileExist("img-server/thumbnails/media/mohamed/640/DOWNLOADS/IDM/videos/test/3/Performance_insights_panel_DevToolsTips.jpeg"))
 }
 // void testDoesFileExist()
+async function testStartImgServer() {
+	let { startImgServer } = await import("@/utils/start-img-server")
+	startImgServer()
+}
+// void testStartImgServer()
