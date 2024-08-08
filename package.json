@@ -7,7 +7,7 @@
 		"dev": "next dev",
 		"dev:wifi": "next dev -H 192.168.1.106 --experimental-https",
 		"build": "next build",
-		"start": "NEXT_MANUAL_SIG_HANDLE=true next start",
+		"start": "next start",
 		"lint": "next lint"
 	},
 	"dependencies": {

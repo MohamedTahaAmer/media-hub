@@ -31,7 +31,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 					{/* size and download button for files */}
 					{!item.isDirectory && (
 						<div className="flex justify-between gap-2 px-2">
-							<Link href={`/api/download/${encodeURIComponent(path.join(directoryName, item.name))}`}>
+							<Link href={`/api/download/${encodeURIComponent(path.join(directoryName, item.name))}`} prefetch={false}>
 								<DownloadIcon />
 							</Link>
 							<div className="">{item.size}</div>
@@ -59,7 +59,7 @@ function DisplayTitle({ isDirectory, name, dir }: { isDirectory: boolean; name: 
 	let baseEndPoint = isDirectory ? "/dir/" : "/api/download/"
 	return (
 		<div className="truncate-two-lines pl-2">
-			<Link href={`${baseEndPoint}${dir}`} className="font-bold">
+			<Link prefetch={false} href={`${baseEndPoint}${dir}`} className="font-bold">
 				{name}
 			</Link>
 		</div>
