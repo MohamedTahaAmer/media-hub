@@ -1,6 +1,7 @@
 import { Toaster } from "sonner"
 import Navbar from "./_components/navbar"
 import { startImgServer } from "@/utils/start-img-server"
+import { startProxyServer } from "@/utils/start-proxy-server"
 
 export default function NavBarLayout({
 	children,
@@ -8,6 +9,7 @@ export default function NavBarLayout({
 	children: React.ReactNode
 }>) {
 	startImgServer()
+	startProxyServer()
 	return (
 		<>
 			<Navbar />

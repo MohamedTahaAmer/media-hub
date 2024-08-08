@@ -25,7 +25,7 @@ export function startServer() {
 		}
 	})
 	server.on("close", () => {
-		console.log("\x1b[1;33m%s\x1b[1;36m", "Server is closing...")
+		console.log("\x1b[1;33m%s\x1b[1;36m", "Images Server is closing...")
 	})
 	return server
 }
