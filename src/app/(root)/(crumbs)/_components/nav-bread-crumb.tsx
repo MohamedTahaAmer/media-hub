@@ -1,7 +1,8 @@
 "use client"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils"
 import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 function getHref({ pathArray, index, pre }: { pathArray: string[]; index: number; pre: string }) {
@@ -24,17 +25,17 @@ const NavBreadCrumb = ({ root = "" }: { root?: string }) => {
 						"text-foreground": pathArray.length === 0,
 					})}
 				>
-					<BreadcrumbLink href="/">{root}</BreadcrumbLink>
+					<Link href="/">{root}</Link>
 				</BreadcrumbItem>
 				{pathArray.map((item, index) => (
 					<BreadcrumbItem
-						key={`${pathName}`}
+						key={`${getHref({ pathArray, index, pre: "/dir/" })}`}
 						className={cn("flex gap-2 font-bold", {
 							"text-foreground": index === pathArray.length - 1,
 						})}
 					>
 						<ChevronRight className="size-4" />
-						<BreadcrumbLink href={`${getHref({ pathArray, index, pre: "/dir/" })}`}>{item}</BreadcrumbLink>
+						<Link href={`${getHref({ pathArray, index, pre: "/dir/" })}`}>{item}</Link>
 					</BreadcrumbItem>
 				))}
 			</BreadcrumbList>

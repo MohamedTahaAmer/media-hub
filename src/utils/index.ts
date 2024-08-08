@@ -28,3 +28,17 @@ export async function checkDirectoryExists(dirPath: string) {
 		throw new Error("An error occurred while checking if the directory exists")
 	}
 }
+
+export async function logExecutionTime<T>(func: () => T | Promise<T>, title?: string): Promise<T> {
+	const funcName = title ?? "anonymous function"
+
+	const start = performance.now()
+
+	const result = await func()
+
+	const end = performance.now()
+
+	console.log("\x1b[1;33m%s\x1b[1;36m", `⏰ Time to ${funcName} is: ${(end - start).toFixed(2)}ms`)
+
+	return result
+}

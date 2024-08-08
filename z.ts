@@ -316,3 +316,10 @@ async function testStartImgServer() {
 	startImgServer()
 }
 // void testStartImgServer()
+async function testLogExecutionTime() {
+	let { logExecutionTime } = await import("@/utils/index")
+	let { getFilesAndFolders } = await import("@/utils/create-thumbnails/get-files-and-folders")
+	let res = await logExecutionTime(async () => getFilesAndFolders("/media/mohamed/640/DOWNLOADS/IDM/videos/test/3"), "getFilesAndFolders")
+	// console.log(res)
+}
+// void testLogExecutionTime()
