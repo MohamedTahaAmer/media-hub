@@ -24,10 +24,7 @@ let getTSXIcon = async (svgName: string, defaultIcon: string) => {
 	}
 }
 
-export let getIcon = async (
-	name: string,
-	type: "File" | "Folder" | "OpenFolder",
-): Promise<(_: LucideProps) => JSX.Element> => {
+export let getIcon = (name: string, type: "File" | "Folder" | "OpenFolder"): Promise<(_: LucideProps) => JSX.Element> => {
 	if (type === "File") {
 		let svgFileName = getIconForFile(name)
 		if (!svgFileName) return getTSXIcon("", "DefaultFile")

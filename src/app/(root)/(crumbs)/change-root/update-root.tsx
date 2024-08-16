@@ -3,39 +3,30 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { useRootDir } from "@/hooks/zustand/rootDir"
+import { toastErrorMessage, toastInfoMessage, toastSuccessMessage } from "@/lib/toast-helpers"
 import { handleRootChange } from "./actions"
 
-const UpdateRoot = ({ currentRootDir }: { currentRootDir: string }) => {
-	const [rootDir, setRootDir] = useState(currentRootDir)
-	useEffect(() => {
-		setRootDir(currentRootDir)
-	}, [currentRootDir])
+const UpdateRoot = () => {
+	let { setRootDir, rootDir } = useRootDir()
+	let newRootInput = "new-root"
 
-	let inputId = "new-root"
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		let form = event.currentTarget as HTMLFormElement
-		let newRoot = (form[inputId] as HTMLInputElement).value.trim()
+		let form = event.target as HTMLFormElement
+		let formData = new FormData(form)
+		let newRoot = formData.get(newRootInput) as string
 		if (newRoot === rootDir) {
-			toast("New root folder is same as current root folder.", {
-				richColors: true,
-			})
+			toastInfoMessage("New Root Folder is same as the current Root Folder")
 			return
 		}
 		try {
 			let res = await handleRootChange(newRoot)
-			toast(res, { richColors: true, style: { background: "green", color: "white" } })
+			toastSuccessMessage(res)
 			setRootDir(newRoot)
 			form.reset()
-		} catch (error: any) {
-			if (error instanceof Error) {
-				toast(error.message ?? "Sorry could not update root folder. Please try again", {
-					richColors: true,
-					style: { background: "red", color: "white" },
-				})
-			}
+		} catch (error) {
+			toastErrorMessage(error)
 		}
 	}
 	return (
@@ -49,13 +40,9 @@ const UpdateRoot = ({ currentRootDir }: { currentRootDir: string }) => {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form id="change-root-form" onSubmit={(e) => void handleSubmit(e)}>
-					<div className="grid w-full items-center gap-4">
-						<div className="flex flex-col space-y-1.5">
-							<Label htmlFor={inputId}>New Root</Label>
-							<Input id={inputId} placeholder="Enter Your New Root Folder" required />
-						</div>
-					</div>
+				<form id="change-root-form" onSubmit={(e) => void handleSubmit(e)} className="flex flex-col space-y-1.5">
+					<Label htmlFor={newRootInput}>New Root</Label>
+					<Input id={newRootInput} name={newRootInput} placeholder="Enter Your New Root Folder" required />
 				</form>
 			</CardContent>
 			<CardFooter className="flex justify-between">
