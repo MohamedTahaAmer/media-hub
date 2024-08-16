@@ -8,12 +8,11 @@ import Link from "next/link"
 import path from "path"
 import { PORT } from "~/img-server/img-server"
 
-const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders | string; directoryName?: string }) => {
-	if (typeof filesAndFolders === "string") return <div>{filesAndFolders}</div>
+const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
 	return (
 		<div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 			{filesAndFolders.map((item) => (
-				<div key={item.name} className="overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-200 dark:shadow-slate-800">
+				<div key={item.name} className="relative overflow-hidden rounded-md pb-2 shadow-xl shadow-slate-200 dark:shadow-slate-800">
 					{/* Thumbnails and Icons */}
 					{item.thumbnail && (
 						<div className="flex aspect-[16/9] items-center justify-center">
@@ -30,12 +29,19 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 
 					{/* size and download button for files */}
 					{!item.isDirectory && (
-						<div className="flex justify-between gap-2 px-2">
-							<Link href={`/api/download/${encodeURIComponent(path.join(directoryName, item.name))}`} prefetch={false}>
-								<DownloadIcon />
-							</Link>
-							<div className="">{item.size}</div>
-						</div>
+						<>
+							<div className="py-5"></div>
+							<div className="absolute bottom-2 flex w-full items-center justify-between gap-2 px-2">
+								<Link
+									href={`/api/download/${encodeURIComponent(path.join(directoryName, item.name))}`}
+									prefetch={false}
+									className="flex items-center gap-2 rounded-md bg-slate-300 p-2 dark:bg-slate-600"
+								>
+									<DownloadIcon /> Download
+								</Link>
+								<div className="">{item.size}</div>
+							</div>
+						</>
 					)}
 				</div>
 			))}
