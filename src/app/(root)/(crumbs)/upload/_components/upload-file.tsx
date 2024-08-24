@@ -162,7 +162,7 @@ function DisplayFileInfo({ files, uploadProgress, handleRemoveFile }: { files: F
 					<div className="grow truncate">
 						<span>{file.name}</span>
 					</div>
-					<span className="w-[67px] shrink-0 text-center" arial-label={`Upload progress for ${file.name}`}>
+					<span className="w-[67px] shrink-0 text-center" aria-label={`Upload progress for ${file.name}`}>
 						{uploadProgress[index] ? `${uploadProgress[index].toFixed(2)}%` : "0%"}
 					</span>
 					{file.type.startsWith("image") ? (

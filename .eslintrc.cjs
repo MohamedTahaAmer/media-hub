@@ -4,7 +4,7 @@ const config = {
 	parserOptions: {
 		project: true,
 	},
-	plugins: ["@typescript-eslint"],
+	plugins: ["@typescript-eslint", "react"],
 	extends: [
 		"next/core-web-vitals",
 		"plugin:@typescript-eslint/recommended-type-checked",
@@ -43,6 +43,7 @@ const config = {
 		// 		},
 		// 	},
 		// ],
+		"react/no-unknown-property": "warn",
 	},
 	// https://github.com/francoismassart/eslint-plugin-tailwindcss/blob/master/README.md
 	// https://github.com/francoismassart/eslint-plugin-tailwindcss/blob/master/docs/rules/no-custom-classname.md#whitelist-default-
