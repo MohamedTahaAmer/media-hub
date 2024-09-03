@@ -21,3 +21,4 @@ export async function GET(req: Request, { params }: { params: { dir: string } })
 		return new Response("File Not Found", { status: 404 })
 	}
 }
+//
