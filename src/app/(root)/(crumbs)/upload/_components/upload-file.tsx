@@ -1,9 +1,8 @@
 "use client"
-import DefaultFile from "@/components/svgs/icons/DefaultFile"
 import SvgsForTheClient from "@/components/svgs/svgs-for-the-client"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { BadgeMinus, Plus, UploadCloud } from "lucide-react"
+import { BadgeMinus, UploadCloud } from "lucide-react"
 import Image from "next/image"
 import React, { useRef, useState } from "react"
 

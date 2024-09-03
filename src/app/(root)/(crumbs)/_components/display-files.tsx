@@ -41,8 +41,8 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 	useEffect(() => {
 		if (!linkRef.current) return
 		if (!fileToDownload) return
+		// - this will download the current file in the fileToDownload state
 		linkRef.current.click()
-		setFileToDownload(null)
 	}, [fileToDownload])
 
 	let handleDownloadClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -71,11 +71,11 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 		let downloadedFilesSize = 0
 		for (let file of filesToDownload) {
 			setFileToDownload(file.name)
-			// await new Promise((resolve) => setTimeout(resolve, 1000))
 			let fileSize = readableBytesToNumber(file.size)
-			downloadedFilesSize += fileSize
+			// - wait for the download to finish, estimated time is based on the file size and the local wifi speed, then toast the message and start the loop for the next download
 			await new Promise((resolve) => setTimeout(resolve, (fileSize / LOCAL_WIFI_SPEED_PER_SEC) * 1000))
 			downloadedFiles++
+			downloadedFilesSize += fileSize
 			toastSuccessMessage(`${downloadedFiles} of ${totalFiles} -- ${Math.round((downloadedFilesSize / totalFilesSize) * 100)}%`)
 		}
 	}
@@ -123,7 +123,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 							<Checkbox
 								id="terms"
 								className="absolute right-4 top-4 size-8 shadow-lg shadow-slate-400"
-								onClick={(e) => handleCheckboxClick({ e, isDirectory: true, name: item.name })}
+								onClick={(e) => handleCheckboxClick({ e, isDirectory: true, name: `${directoryName}/${item.name}` })}
 							/>
 						</>
 					)}
@@ -139,7 +139,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 							<Checkbox
 								id="terms"
 								className="absolute right-4 top-4 size-8 shadow-lg shadow-slate-400"
-								onClick={(e) => handleCheckboxClick({ e, isDirectory: false, name: item.name, size: item.size! })}
+								onClick={(e) => handleCheckboxClick({ e, isDirectory: false, name: encodeURIComponent(`${directoryName}/${item.name}`), size: item.size! })}
 							/>
 						</>
 					)}
@@ -155,7 +155,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 							<Checkbox
 								id="terms"
 								className="absolute right-4 top-4 size-8 shadow-lg shadow-slate-400"
-								onClick={(e) => handleCheckboxClick({ e, isDirectory: false, name: item.name, size: item.size! })}
+								onClick={(e) => handleCheckboxClick({ e, isDirectory: false, name: encodeURIComponent(`${directoryName}/${item.name}`), size: item.size! })}
 							/>
 						</>
 					)}
@@ -170,6 +170,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 					</button>
 				</div>
 			)}
+			{/* - This link is used to hold the state of the current file to download then programmatically click it to download the file */}
 			<Link ref={linkRef} href={`/api/download/file/${fileToDownload}`} prefetch={false} />
 		</div>
 	)
@@ -191,7 +192,7 @@ function DisplayTitle({ isDirectory, name, dir }: { isDirectory: boolean; name: 
 	let baseEndPoint = isDirectory ? "/dir/" : "/api/download/file"
 	return (
 		<div className="truncate-two-lines pl-2">
-			<Link prefetch={false} href={`${baseEndPoint}${dir}`} className="font-bold">
+			<Link prefetch={false} href={`${baseEndPoint}/${dir}`} className="font-bold">
 				{name}
 			</Link>
 		</div>

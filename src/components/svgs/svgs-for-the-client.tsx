@@ -1,7 +1,7 @@
 "use client"
 
 import type { LucideProps } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { getIconForFile, getIconForFolder, getIconForOpenFolder } from "vscode-icons-js"
 import DefaultFile from "./icons/DefaultFile"
 import DefaultFolder from "./icons/DefaultFolder"
