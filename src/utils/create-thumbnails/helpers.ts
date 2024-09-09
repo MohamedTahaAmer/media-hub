@@ -4,7 +4,7 @@ import type { FilesAndFolders } from "./types"
 // export const PUBLIC_THUMBNAILS_FOLDER = "public/thumbnails"
 export const PUBLIC_THUMBNAILS_FOLDER = "img-server/thumbnails"
 export const IMAGE_DIMENSIONS = { width: 320, height: 180 }
-export let forbiddenDirs: string[] = [".next", "dist", "node_modules", ".git", "public", "components"]
+export let forbiddenDirs: string[] = [".next", "dist", "node_modules", ".git", "public", "components", "img-server"]
 
 export async function deepStrictEqual<T>(obj1: T, obj2: T) {
 	let equal = true
