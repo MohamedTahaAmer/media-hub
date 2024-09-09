@@ -1,10 +1,10 @@
 "use client"
-import SvgsForTheClient from "@/components/svgs/svgs-for-the-client"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { BadgeMinus, UploadCloud } from "lucide-react"
 import Image from "next/image"
 import React, { useRef, useState } from "react"
+import { FileIcon } from "react-files-icons"
 
 const UploadFile: React.FC = () => {
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -167,7 +167,7 @@ function DisplayFileInfo({ files, uploadProgress, handleRemoveFile }: { files: F
 					{file.type.startsWith("image") ? (
 						<Image src={URL.createObjectURL(file)} alt={file.name} className="shrink-0" width={40} height={40} />
 					) : (
-						<SvgsForTheClient name={file.name} className="size-10 shrink-0" type="File" />
+						<FileIcon name={file.name} className="size-10 shrink-0" />
 					)}
 					<Button
 						type="button"

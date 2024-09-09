@@ -1,5 +1,4 @@
 "use client"
-import SvgsForTheClient from "@/components/svgs/svgs-for-the-client"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/toast-helpers"
 import { cn } from "@/lib/utils"
@@ -11,6 +10,7 @@ import path from "path"
 import { useState } from "react"
 import { getFirstLevelFilesFromDir } from "./actions"
 import { downloadFile, readableBytesToNumber } from "./utils"
+import { FileIcon, FolderIcon } from "react-files-icons"
 
 const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
 	type FileToDownload = { name: string; size: string; url: string }
@@ -85,7 +85,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 					{item.isDirectory && (
 						<>
 							<Link prefetch={false} href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
-								<SvgsForTheClient name={item.name} type="Folder" className={cn("-m-4 aspect-[4/3]")} />
+								<FolderIcon name={item.name} className={cn("-m-4 aspect-[4/3]")} />
 							</Link>
 							<DisplayTitle isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
 							<Checkbox
@@ -118,7 +118,11 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 					{!item.isDirectory && !item.thumbnail && (
 						<>
 							<Link href={`/dir/${encodeURIComponent(path.join(directoryName, item.name))}`}>
-								<SvgsForTheClient name={item.name} type={item.isDirectory ? "Folder" : "File"} className={cn("aspect-[16/9]")} />
+								{item.isDirectory ? (
+									<FolderIcon name={item.name} className={cn("-m-4 aspect-[4/3]")} />
+								) : (
+									<FileIcon name={item.name} className={cn("aspect-[16/9]")} />
+								)}
 							</Link>
 							<DisplayTitle isDirectory={item.isDirectory} name={item.name} dir={encodeURIComponent(path.join(directoryName, item.name))} />
 							<Footer fullDir={encodeURIComponent(path.join(directoryName, item.name))} size={item.size ?? ""} />
