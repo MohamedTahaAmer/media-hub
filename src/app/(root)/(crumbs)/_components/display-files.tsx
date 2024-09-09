@@ -14,11 +14,11 @@ import { downloadFile, readableBytesToNumber } from "./utils"
 
 const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders: FilesAndFolders; directoryName?: string }) => {
 	type FileToDownload = { name: string; size: string; url: string }
+	type ButtonClickEvent = React.MouseEvent<HTMLButtonElement, MouseEvent>
 	const [checkedFiles, setCheckedFiles] = useState<Array<FileToDownload>>([])
 	const [checkedFolders, setCheckedFolders] = useState<string[]>([])
-	const [fileToDownload, setFileToDownload] = useState<string | null>(null)
 
-	let handleDownloadClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	let handleDownloadClick = async (e: ButtonClickEvent) => {
 		// - Collect all files to download from checked files and folders first level files
 		let filesToDownload: FileToDownload[] = []
 		if (checkedFolders.length) {
@@ -32,9 +32,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 				toastErrorMessage(error)
 			}
 		}
-		if (checkedFiles.length) {
-			filesToDownload.push(...checkedFiles)
-		}
+		if (checkedFiles.length) filesToDownload.push(...checkedFiles)
 
 		let downloadedFiles = 0
 		let downloadedFilesSize = 0
@@ -42,7 +40,6 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 		const totalFilesSize = filesToDownload.reduce((acc, file) => acc + readableBytesToNumber(file.size), 0)
 
 		for (let file of filesToDownload) {
-			setFileToDownload(file.name)
 			await downloadFile(`/api/download/file/${file.url}`, file.name)
 			let fileSize = readableBytesToNumber(file.size)
 			downloadedFiles++
@@ -52,20 +49,8 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 	}
 
 	type HandleCheckboxClick = {
-		({ e, isDirectory, name, url }: { e: React.MouseEvent<HTMLButtonElement, MouseEvent>; isDirectory: true; name: string; url: string }): void
-		({
-			e,
-			isDirectory,
-			name,
-			size,
-			url,
-		}: {
-			e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-			isDirectory: false
-			name: string
-			size: string
-			url: string
-		}): void
+		({ e, isDirectory, name, url }: { e: ButtonClickEvent; isDirectory: true; name: string; url: string }): void
+		({ e, isDirectory, name, size, url }: { e: ButtonClickEvent; isDirectory: false; name: string; size: string; url: string }): void
 	}
 	let handleCheckboxClick: HandleCheckboxClick = ({
 		e,
@@ -74,24 +59,22 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 		size,
 		url,
 	}: {
-		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+		e: ButtonClickEvent
 		isDirectory: boolean
 		name: string
 		size?: string
 		url: string
 	}) => {
-		if (!isDirectory && size === undefined) {
-			throw new Error("Size is required when isDirectory is false.")
-		}
+		if (!isDirectory && size === undefined) throw new Error("Size is required when isDirectory is false.")
 		e.stopPropagation()
 		let target = e.target as HTMLInputElement
 		// - this getAttribute returns the current state of the checkbox, before ShadCN state updates, so we have to negate it to match the new state
 		let checked = !(target.getAttribute("aria-checked") === "true")
 		if (checked) {
 			isDirectory ? setCheckedFolders((prev) => [...prev, name]) : setCheckedFiles((prev) => [...prev, { name, size: size!, url }])
-		} else {
-			isDirectory ? setCheckedFolders((prev) => prev.filter((folder) => folder !== name)) : setCheckedFiles((prev) => prev.filter((file) => file.name !== name))
+			return
 		}
+		isDirectory ? setCheckedFolders((prev) => prev.filter((folder) => folder !== name)) : setCheckedFiles((prev) => prev.filter((file) => file.name !== name))
 	}
 
 	return (
