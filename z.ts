@@ -323,3 +323,11 @@ async function testLogExecutionTime() {
 	// console.log(res)
 }
 // void testLogExecutionTime()
+
+async function testAddText() {
+	let { addText, getAllTextEntries, deleteTextEntry } = await import("@/app/(root)/cp/actions")
+	// await addText("test")
+	await deleteTextEntry(2)
+	await getAllTextEntries()
+}
+// void testAddText()

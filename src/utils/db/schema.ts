@@ -7,3 +7,8 @@ export const thumbnails = sqliteTable("thumbnails", {
 	thumbnailWidth: int("thumbnail-width").notNull(),
 	thumbnailHeight: int("thumbnail-height").notNull(),
 })
+
+export const textEntries = sqliteTable("text_entries", {
+	id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+	content: text("content").notNull(),
+})
