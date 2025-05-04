@@ -4,7 +4,7 @@ import path from "path"
 import { db, schema } from "../db/db"
 import { handleImage } from "./handle-img"
 import { handleVideos } from "./handle-video"
-import { checkIfFileIsActual, forbiddenDirs, handleDirectories, readableBytes } from "./helpers"
+import { checkIfFileIsActual, DetailedError, forbiddenDirs, handleDirectories, readableBytes } from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
 
 function cleanDir(dir: string) {
@@ -54,7 +54,21 @@ export async function getFilesAndFolders(_dir: string) {
 			size,
 		})
 	}
-	await Promise.allSettled(videoHandlerCalls)
+	let videoHandlersResults = await Promise.allSettled(videoHandlerCalls)
+	for (const result of videoHandlersResults) {
+		if (result.status === "rejected" && result.reason instanceof DetailedError) {
+			let fullPath = result.reason.details.videoPath as string
+			let stats = await stat(fullPath)
+			let size = readableBytes(stats.size)
+			filesAndFolders.push({
+				name: path.basename(fullPath),
+				isDirectory: false,
+				thumbnail: undefined,
+				size,
+			})
+		}
+	}
+
 	return filesAndFolders.sort((a, b) => {
 		if (a.isDirectory && !b.isDirectory) return -1
 		if (!a.isDirectory && b.isDirectory) return 1

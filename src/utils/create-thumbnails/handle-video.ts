@@ -2,7 +2,16 @@ import { mkdir, stat } from "fs/promises"
 import path from "path"
 import { doesFileExist } from ".."
 import { db, schema } from "../db/db"
-import { deepStrictEqual, getFileUniqueStats, IMAGE_DIMENSIONS, PUBLIC_THUMBNAILS_FOLDER, readableBytes, sanitizeDir, sanitizeForHref } from "./helpers"
+import {
+	deepStrictEqual,
+	DetailedError,
+	getFileUniqueStats,
+	IMAGE_DIMENSIONS,
+	PUBLIC_THUMBNAILS_FOLDER,
+	readableBytes,
+	sanitizeDir,
+	sanitizeForHref,
+} from "./helpers"
 import type { FilesAndFolders, Thumbnail } from "./types"
 import Ffmpeg from "fluent-ffmpeg"
 
@@ -22,7 +31,10 @@ async function getVideoDimensions(videoPath: string) {
 async function createThumbnail({ videoPath, thumbnailName, thumbnailPath }: { videoPath: string; thumbnailName: string; thumbnailPath: string }) {
 	let videoDimensions = await getVideoDimensions(videoPath)
 	if (!videoDimensions.width || !videoDimensions.height) {
-		throw new Error("Couldn't get the dimensions of the video")
+		// throw new Error("Couldn't get the dimensions of the video")
+		throw new DetailedError("Couldn't get the dimensions of the video", {
+			videoPath,
+		})
 	}
 
 	let resizeScale = Math.min(IMAGE_DIMENSIONS.width / videoDimensions.width, IMAGE_DIMENSIONS.height / videoDimensions.height)

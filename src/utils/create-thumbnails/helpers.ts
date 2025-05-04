@@ -81,3 +81,13 @@ export function handleDirectories({ filesAndFolders, path, name }: { filesAndFol
 		size: undefined,
 	})
 }
+
+export class DetailedError extends Error {
+	details: Record<string, any>
+
+	constructor(message: string, details = {}, errorName = "DetailedError") {
+		super(message)
+		this.name = errorName
+		this.details = details
+	}
+}
