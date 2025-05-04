@@ -153,7 +153,7 @@ const DisplayFiles = ({ filesAndFolders, directoryName = "" }: { filesAndFolders
 export default DisplayFiles
 
 function DynamicImage({ name, width, height }: { name: string; width: number; height: number }) {
-	let Host = "192.168.1.106"
+	let Host = "192.168.1.110"
 	let port = "3001"
 	let imgURL = `http://${Host}:${port}${name}`
 
